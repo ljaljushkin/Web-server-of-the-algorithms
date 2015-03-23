@@ -52,3 +52,12 @@ docs/_build/
 
 # PyBuilder
 target/
+*~
+*.orig
+*.pyc
+*.rej
+.installed.cfg
+
+
+*.iml
+.idea/
