@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <form id="main_form" name="frm" action="{% url 'alg_details'%}" method="post">
+        {% csrf_token %}
+        <input type="text" value="">
+        <input type="button" value="Search"><br>
+        <select name="selected_alg" multiple="multiple" id='lstBox1' style="font-family:verdana;
+                                            font-size:10pt;
+                                            width : 400px;
+                                            height:200px;">
+            {% for item in algs_list %}
+                <option id="{{ item }}" name="{{ item }}" value="{{ item }}"> {{ item }} </option>
+            {% endfor %}
+        </select><br>
+        <input type="submit" value="GO!!!111111"/>
+        {% csrf_token %}
+    </form>
+</body>
+</html>
+
+
+
