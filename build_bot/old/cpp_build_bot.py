@@ -1,5 +1,6 @@
 import os
-from common_part import find_tool, shell
+
+from common.cmd_utils import shell
 
 
 class CppBuildBot:
@@ -10,7 +11,7 @@ class CppBuildBot:
             cl_path = self.path_vcvarsall + "\\..\\bin\\cl.exe"
             # [is_found, cl_path] = find_tool("cl")
             # if is_found:
-            print(shell(cl_path))
+            print(shell(cl_path, env=True))
             # else:
             # print("cl was not found")
         else:
