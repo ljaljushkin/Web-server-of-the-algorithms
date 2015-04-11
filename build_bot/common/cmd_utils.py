@@ -1,10 +1,13 @@
+import os
 import subprocess
+import tempfile
 
 
 def shell(cmd, env=None):
     print("calling command: " + str(cmd))
     p = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     (std_out, std_err) = p.communicate()
+
     return p.returncode, std_out, std_err
 
 
@@ -27,3 +30,30 @@ def find_tool(tool):
         is_found = False
 
     return is_found, paths
+
+
+def set_env(bat_file):
+    """ Set current os.environ variables by sourcing an existing .bat file
+        Note that because of a bug with stdout=subprocess.PIPE in my environment
+        i use '>' to pipe out the output of 'set' into a text file, instead of
+        of using stdout. So you could simplify this a bit...
+    """
+
+    # Run the command and pipe to a tempfile
+    temp = tempfile.mktemp()
+    cmd = '%s && set > %s' % (bat_file, temp)
+    print(cmd)
+    login = subprocess.Popen(cmd, shell=True)
+    state = login.wait()
+
+    # Parse the output
+    data = []
+    if os.path.isfile(temp):
+        with open(temp, 'r') as file:
+            data = file.readlines()
+        os.remove(temp)
+
+    # Every line will set an env variable
+    for env in data:
+        env = env.strip().split('=')
+        os.environ[env[0]] = env[1]

@@ -9,7 +9,6 @@ from languages.fp_language import FPLanguage
 class BuildBotTests(unittest.TestCase):
     def test_can_create_build_bot_for_cpp_language(self):
         language = CPPLanguage()
-        # self.assertEqual("",language.COMPILER_PATH)
         build_bot = BuildBot(language)
         self.assertEqual(build_bot.compiler_path, CPPLanguage.COMPILER_PATH)
 
