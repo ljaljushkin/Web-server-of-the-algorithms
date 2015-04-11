@@ -57,3 +57,7 @@ def set_env(bat_file):
     for env in data:
         env = env.strip().split('=')
         os.environ[env[0]] = env[1]
+
+
+def screen_str(string):
+    return "\"" + string + "\""
