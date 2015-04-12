@@ -2,6 +2,9 @@ import os
 import subprocess
 import tempfile
 
+ERROR_INVALID_FUNCTION = 1
+ERROR_PROC_NOT_FOUND = 127
+
 
 def shell(cmd, env=None):
     print("calling command: " + str(cmd))
@@ -26,25 +29,18 @@ def find_tool(tool):
         print(x)
 
     is_found = True
-    if returncode == 127 or returncode == 1:
+    if returncode == ERROR_PROC_NOT_FOUND or returncode == ERROR_INVALID_FUNCTION:
         is_found = False
 
     return is_found, paths
 
 
 def set_env(bat_file):
-    """ Set current os.environ variables by sourcing an existing .bat file
-        Note that because of a bug with stdout=subprocess.PIPE in my environment
-        i use '>' to pipe out the output of 'set' into a text file, instead of
-        of using stdout. So you could simplify this a bit...
-    """
-
     # Run the command and pipe to a tempfile
     temp = tempfile.mktemp()
     cmd = '%s && set > %s' % (bat_file, temp)
-    print(cmd)
     login = subprocess.Popen(cmd, shell=True)
-    state = login.wait()
+    login.wait()
 
     # Parse the output
     data = []

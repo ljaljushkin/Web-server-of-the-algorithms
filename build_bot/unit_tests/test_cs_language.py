@@ -12,7 +12,7 @@ class CSLanguageTests(unittest.TestCase):
 
     def test_can_get_cs_compiler(self):
         cpp_language = CSLanguage()
-        self.assertIsNotNone(cpp_language.get_compiler_path(), CSLanguage.COMPILER_PATH)
+        self.assertIsNotNone(cpp_language.get_compiler_path(), CSLanguage.DEFAULT_COMPILER_DIR)
 
     def test_is_compiler_path_exists(self):
-        self.assertTrue(os.path.exists(CSLanguage.COMPILER_PATH))
+        self.assertTrue(os.path.exists(CSLanguage.DEFAULT_COMPILER_DIR))
