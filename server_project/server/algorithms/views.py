@@ -6,16 +6,25 @@ from algorithms.models import Algorithm, TestData, User, Status
 
 
 def index(request):
-    algs_list = ["alg1", "alg2", "alg3", "alg4", "alg5", "alg6", "alg7", "alg8", "alg9", "alg10"]
+    alg_obj_list = Algorithm.objects.all()
+    algs_list = []
+
+    for item in alg_obj_list :
+        algs_list.append(item.algorithm_name)
 
     return render(request,
                   "algorithms/index.html",
                   {"algs_list": algs_list})
 
 
-def alg_details(request):
-    print(request)
-    return HttpResponse(request.POST["selected_alg"])
+def alg_details(request, alg_name):
+    print(alg_name)
+    algorithm = Algorithm.objects.filter(algorithm_name=alg_name).first();
+    return render(request,
+                  "algorithms/alg_details.html",
+        {"name":algorithm.algorithm_name,
+        "description":algorithm.algorithm_description,
+        "source_code":algorithm.source_code})
 
 
 def add_algorithm(request):
