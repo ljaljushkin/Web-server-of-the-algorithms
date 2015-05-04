@@ -1,6 +1,6 @@
 import os
 import unittest
-from languages.fp_language import FPLanguage
+from build_bot.Languages.fp_language import FPLanguage
 
 
 class FPLanguageTests(unittest.TestCase):
@@ -15,5 +15,4 @@ class FPLanguageTests(unittest.TestCase):
 
     def test_is_compiler_path_exists(self):
         self.assertTrue(os.path.exists(FPLanguage.DEFAULT_COMPILER_DIR))
-
 

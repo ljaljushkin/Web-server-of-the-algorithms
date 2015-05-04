@@ -1,15 +1,14 @@
 import os
 import unittest
 import pytest
-from common.cmd_utils import shell, set_env, find_tool, split_lines, screen_str
-from languages.cpp_language import CPPLanguage
+from build_bot.Languages.cpp_language import CPPLanguage
+from build_bot.common.cmd_utils import set_env, screen_str, find_tool, shell, split_lines
 
 test_name = __name__
 
 
 @pytest.mark.usefixtures("test_build_directory_fixture", "test_config_fixture")
 class CPPLanguageTests(unittest.TestCase):
-
     def setUp(self):
         self.cpp_language_without_config = CPPLanguage()
         self.test_file_name = "basic"
@@ -48,18 +47,15 @@ class CPPLanguageTests(unittest.TestCase):
         self.assertTrue(os.path.exists(CPPLanguage.DEFAULT_VC_BAT_PATH))
 
     def test_can_set_env_from_bat(self):
-        set_env(screen_str(self.cpp_language_without_config.vc_bat_path))
         self.assertIsNotNone(os.getenv("INCLUDE"))
         self.assertIsNotNone(os.getenv("LIB"))
 
     def test_can_find_cl(self):
-        set_env(screen_str(self.cpp_language_without_config.vc_bat_path))
         (is_found, path) = find_tool("cl")
         self.assertTrue(is_found)
         self.assertEquals(path.pop(), self.cpp_language_without_config.compiler_path)
 
     def test_can_successfully_call_cl_only(self):
-        set_env(screen_str(self.cpp_language_without_config.vc_bat_path))
         (ret_code, out, err) = shell(self.cpp_language_without_config.compiler_path)
         self.assertEquals(ret_code, 0)
 
@@ -82,7 +78,6 @@ class CPPLanguageTests(unittest.TestCase):
         self.assertEquals(split_lines(out).pop(), "This is a native C++ program.")
 
     def _compile(self, language):
-        set_env(screen_str(language.vc_bat_path))
         compile_cmd = screen_str(language.compiler_path) + " " + self.test_src_file_path \
                       + " /Fo" + self.build_dir + os.sep + " /Fe" + self.test_exe_file_path
         print(compile_cmd)

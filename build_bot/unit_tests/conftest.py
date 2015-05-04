@@ -2,10 +2,9 @@ import configparser
 import os
 import shutil
 import pytest
-from common.cmd_utils import screen_str
-from languages.cpp_language import CPPLanguage
-from languages.cs_language import CSLanguage
-from languages.fp_language import FPLanguage
+from build_bot.Languages.cpp_language import CPPLanguage
+from build_bot.Languages.cs_language import CSLanguage
+from build_bot.Languages.fp_language import FPLanguage
 
 
 @pytest.fixture(scope="class")
