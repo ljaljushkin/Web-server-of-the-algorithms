@@ -16,7 +16,11 @@ class CppBuildBotTests(unittest.TestCase):
         self.test_exe_name = self.test_file_name + ".exe"
 
         self.test_src_file_path = os.path.join(self.src_code_dir, self.test_src_name)
-        self.test_exe_file_path = os.path.join(self.build_dir_bin, self.test_exe_name)
+
+        self.output_dir = os.path.join(self.build_dir, "cfg_output_dir")
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+        self.test_exe_path = os.path.join(self.output_dir, self.test_exe_name)
 
         self.language = CPPLanguage(self.config_parser)
         self.build_bot = BuildBot(self.language, self.config_parser)
@@ -29,17 +33,15 @@ class CppBuildBotTests(unittest.TestCase):
         assert hasattr(self, "is_config_read_ok")
 
     def test_can_successfully_run_build_bot(self):
-        (ret_code, out, err) = self.build_bot.build(self.test_src_file_path, self.test_file_name)
+        (ret_code, out, err) = self.build_bot.build(self.test_src_file_path, self.test_exe_path)
         self.assertEquals(ret_code, 0)
 
     def test_does_exist_exe_file_created_by_build_bot(self):
-        output_dir = self.config_parser.get('build_config', 'output_dir')
-        self.build_bot.build(self.test_src_file_path, self.test_file_name)
-        self.assertTrue(os.path.exists(output_dir + os.sep + self.test_exe_name))
+        self.build_bot.build(self.test_src_file_path, self.test_exe_path)
+        self.assertTrue(os.path.exists(self.test_exe_path))
 
     def test_can_successfully_run_created_exe_file(self):
-        self.build_bot.build(self.test_src_file_path, self.test_file_name)
-        output_dir = self.config_parser.get('build_config', 'output_dir')
-        (ret_code, out, err) = shell(output_dir + os.sep + self.test_exe_name)
+        self.build_bot.build(self.test_src_file_path, self.test_exe_path)
+        (ret_code, out, err) = shell(self.test_exe_path)
         self.assertEquals(ret_code, 0)
         self.assertEquals(split_lines(out).pop(), "This is a native C++ program.")

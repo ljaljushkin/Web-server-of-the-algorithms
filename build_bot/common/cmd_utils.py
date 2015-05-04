@@ -8,10 +8,17 @@ ERROR_PROC_NOT_FOUND = 127
 
 def shell(cmd, env=None):
     print("calling command: " + str(cmd))
-    p = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-    (std_out, std_err) = p.communicate()
+    process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    (std_out, std_err) = process.communicate()
+    print_std_streams(std_out, std_err, "shell")
+    return process.returncode, std_out, std_err
 
-    return p.returncode, std_out, std_err
+
+def print_std_streams(std_out, std_err, method_name):
+    for line in std_out.splitlines():
+        print("stdout of [%s] method: %s\n" % (method_name, line.strip()))
+    for line in std_err.splitlines():
+        print("stderr of [%s] method: %s\n" % (method_name, line.strip()))
 
 
 def split_lines(text):
