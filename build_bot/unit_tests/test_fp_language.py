@@ -1,6 +1,6 @@
 import os
 import unittest
-from build_bot.Languages.fp_language import FPLanguage
+from fp_language import FPLanguage
 
 
 class FPLanguageTests(unittest.TestCase):

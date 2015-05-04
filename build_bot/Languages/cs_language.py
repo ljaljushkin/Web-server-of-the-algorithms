@@ -1,5 +1,5 @@
 import os
-from build_bot.Languages.language import Language
+from language import Language
 
 
 class CSLanguage(Language):
@@ -10,7 +10,7 @@ class CSLanguage(Language):
     DEFAULT_COMPILER_PATH = os.path.join(DEFAULT_COMPILER_DIR, COMPILER_FILE)
 
     def __init__(self, config_parser=None):
-        super().__init__()
+        Language.__init__(self)
         self.compiler_dir = self.DEFAULT_COMPILER_DIR
         self.compiler_path = os.path.join(self.compiler_dir, self.COMPILER_FILE)
         if config_parser:

@@ -1,9 +1,9 @@
 import os
 import unittest
 import pytest
-from build_bot.build_bot import BuildBot
-from build_bot.Languages.cpp_language import CPPLanguage
-from build_bot.common.cmd_utils import shell, split_lines
+from build_bot import BuildBot
+from cmd_utils import shell, split_lines
+from cpp_language import CPPLanguage
 
 test_name = __name__
 
@@ -44,4 +44,4 @@ class CppBuildBotTests(unittest.TestCase):
         self.build_bot.build(self.test_src_file_path, self.test_exe_path)
         (ret_code, out, err) = shell(self.test_exe_path)
         self.assertEquals(ret_code, 0)
-        self.assertEquals(split_lines(out).pop(), "This is a native C++ program.")
+        self.assertEquals(split_lines(out).pop(0), "This is a native C++ program.")

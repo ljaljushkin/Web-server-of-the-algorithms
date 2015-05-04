@@ -1,6 +1,6 @@
 import os
 import unittest
-from build_bot.Languages.cs_language import CSLanguage
+from cs_language import CSLanguage
 
 
 class CSLanguageTests(unittest.TestCase):

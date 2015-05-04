@@ -1,8 +1,8 @@
 import os
 import unittest
 import pytest
-from build_bot.Languages.cpp_language import CPPLanguage
-from build_bot.common.cmd_utils import set_env, screen_str, find_tool, shell, split_lines
+from cmd_utils import shell, split_lines, screen_str, find_tool
+from cpp_language import CPPLanguage
 
 test_name = __name__
 
@@ -53,7 +53,7 @@ class CPPLanguageTests(unittest.TestCase):
     def test_can_find_cl(self):
         (is_found, path) = find_tool("cl")
         self.assertTrue(is_found)
-        self.assertEquals(path.pop(), self.cpp_language_without_config.compiler_path)
+        self.assertEquals(path.pop(0), self.cpp_language_without_config.compiler_path)
 
     def test_can_successfully_call_cl_only(self):
         (ret_code, out, err) = shell(self.cpp_language_without_config.compiler_path)
@@ -68,14 +68,14 @@ class CPPLanguageTests(unittest.TestCase):
         self._compile(self.cpp_language_without_config)
         (ret_code, out, err) = shell(self.test_exe_file_path)
         self.assertEquals(ret_code, 0)
-        self.assertEquals(split_lines(out).pop(), "This is a native C++ program.")
+        self.assertEquals(split_lines(out).pop(0), "This is a native C++ program.")
 
     def test_can_successfully_compile_and_run_test_file_with_config(self):
         cpp_language_with_config = CPPLanguage(self.config_parser)
         self._compile(cpp_language_with_config)
         (ret_code, out, err) = shell(self.test_exe_file_path)
         self.assertEquals(ret_code, 0)
-        self.assertEquals(split_lines(out).pop(), "This is a native C++ program.")
+        self.assertEquals(split_lines(out).pop(0), "This is a native C++ program.")
 
     def _compile(self, language):
         compile_cmd = screen_str(language.compiler_path) + " " + self.test_src_file_path \

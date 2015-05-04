@@ -1,10 +1,18 @@
-import configparser
+import sys
+
+if sys.version_info > (3, 0):
+    # Python 3 code in this block
+    import configparser
+else:
+    # Python 2 code in this block
+    import ConfigParser
+
 import os
 import shutil
 import pytest
-from build_bot.Languages.cpp_language import CPPLanguage
-from build_bot.Languages.cs_language import CSLanguage
-from build_bot.Languages.fp_language import FPLanguage
+from cpp_language import CPPLanguage
+from cs_language import CSLanguage
+from fp_language import FPLanguage
 
 
 @pytest.fixture(scope="class")
@@ -34,6 +42,10 @@ def test_config_fixture(request, test_build_directory_fixture):
     f.write("fp_path = " + FPLanguage.DEFAULT_COMPILER_DIR + "\n")
     f.close()
 
-    request.cls.config_parser = configparser.ConfigParser()
+    if sys.version_info > (3, 0):
+        request.cls.config_parser = configparser.ConfigParser()
+    else:
+        request.cls.config_parser = ConfigParser.ConfigParser()
+
     request.cls.is_config_read_ok = request.cls.config_parser.read(config_file_path)
 

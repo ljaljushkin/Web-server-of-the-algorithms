@@ -1,7 +1,8 @@
 import os
 import tempfile
-from build_bot.Languages.language import Language
-from build_bot.common.cmd_utils import set_env, screen_str
+
+from cmd_utils import set_env, screen_str
+from language import Language
 
 
 class CPPLanguage(Language):
@@ -13,7 +14,7 @@ class CPPLanguage(Language):
     DEFAULT_COMPILER_PATH = os.path.join(DEFAULT_COMPILER_DIR, COMPILER_FILE)
 
     def __init__(self, config_parser=None):
-        super().__init__()
+        Language.__init__(self)
         self.compiler_dir = self.DEFAULT_COMPILER_DIR
         if config_parser:
             compiler_dir = config_parser.get('compiler_paths', 'cpp_path')
