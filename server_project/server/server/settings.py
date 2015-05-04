@@ -26,6 +26,9 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+PROJECT_DIR = ""
+
+STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 
 # Application definition
 

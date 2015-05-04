@@ -2,25 +2,65 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
+    {% load staticfiles %}
+
+    <script src="{% static 'algorithms/js/jquery-latest.min.js' %}"></script>
+    <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
 </head>
 <body>
-    <form id="main_form" name="frm" action="{% url 'alg_details'%}" method="post">
-        {% csrf_token %}
-        <input type="text" value="">
-        <input type="button" value="Search"><br>
-        <select name="selected_alg" multiple="multiple" id='lstBox1' style="font-family:verdana;
-                                            font-size:10pt;
-                                            width : 400px;
-                                            height:200px;">
-            {% for item in algs_list %}
-                <option id="{{ item }}" name="{{ item }}" value="{{ item }}"> {{ item }} </option>
-            {% endfor %}
-        </select><br>
-        <input type="submit" value="GO!!!111111"/>
-        {% csrf_token %}
-    </form>
+    {% csrf_token %}
+    <input type="text" value="">
+    <input type="button" value="Search"><br>
+    <select name="selected_alg" multiple="False" id='lstBox1' style="font-family:verdana;
+                                        font-size:10pt;
+                                        width : 400px;
+                                        height:200px;">
+        {% for item in algs_list %}
+            <option id="{{ item }}" name="{{ item }}" value="{{ item }}"> {{ item }} </option>
+        {% endfor %}
+    </select><br>
+    <input type="button" value="GO!!!111111" onclick="redirect()"/>
+    {% csrf_token %}
 </body>
+
+<script>
+$.ajaxSetup({ 
+     beforeSend: function(xhr, settings) {
+         function getCookie(name) {
+             var cookieValue = null;
+             if (document.cookie && document.cookie != '') {
+                 var cookies = document.cookie.split(';');
+                 for (var i = 0; i < cookies.length; i++) {
+                     var cookie = jQuery.trim(cookies[i]);
+
+                 if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                     cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                     break;
+                 }
+             }
+         }
+         return cookieValue;
+         }
+         if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+             xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+         }
+     } 
+});
+
+function redirect() {
+    var algSelect = $("#lstBox1 option:selected").text();
+
+    var currUrl = window.location.href;
+
+    var newUrl = "";
+
+    newUrl = currUrl + algSelect;
+    newUrl = newUrl.replace(/\s/g, '');
+    window.location.replace(newUrl);
+}
+
+</script>
 </html>
 
 
