@@ -1,4 +1,4 @@
-from cmd_utils import shell
+from common.cmd_utils import shell
 from ibuild_bot import IBuildBot
 
 

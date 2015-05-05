@@ -3,19 +3,38 @@ from django.shortcuts import render
 
 # Create your views here.
 from algorithms.models import Algorithm, TestData, User, Status
+import sys
+sys.path.append("E:\\Studying\\Web-server-of-the-algorithms\\build_bot")
+sys.path.append("E:\\Studying\\Web-server-of-the-algorithms\\build_bot\\Languages")
+from build_bot import BuildBot
+from cpp_language import CPPLanguage
+import os
+if sys.version_info > (3, 0):
+    import configparser
+else:
+    import ConfigParser
 
 
 def index(request):
-    algs_list = ["alg1", "alg2", "alg3", "alg4", "alg5", "alg6", "alg7", "alg8", "alg9", "alg10"]
+    alg_obj_list = Algorithm.objects.all()
+    algs_list = []
+
+    for item in alg_obj_list :
+        algs_list.append(item.algorithm_name)
 
     return render(request,
                   "algorithms/index.html",
                   {"algs_list": algs_list})
 
 
-def alg_details(request):
-    print(request)
-    return HttpResponse(request.POST["selected_alg"])
+def alg_details(request, alg_name):
+    print(alg_name)
+    algorithm = Algorithm.objects.filter(algorithm_name=alg_name).first();
+    return render(request,
+                  "algorithms/alg_details.html",
+        {"name":algorithm.algorithm_name,
+        "description":algorithm.algorithm_description,
+        "source_code":algorithm.source_code})
 
 
 def add_algorithm(request):
@@ -52,8 +71,24 @@ def submit_algorithm(request):
                                         user_id=user,
                                         status_id=status,
                                         language="cpp")
-    new_algo.save()
+    
+	
+    if sys.version_info > (3, 0):
+        config_parser = configparser.ConfigParser()
+    else:
+        config_parser = ConfigParser.ConfigParser()
+	
+    is_config_read_ok = config_parser.read("E:\\Studying\\Web-server-of-the-algorithms\\server_project\\server\\algorithms\\config.cfg")
+    assert is_config_read_ok
 
+    cpp_language_with_config = CPPLanguage(config_parser)
+    build_bot = BuildBot(cpp_language_with_config, config_parser)
+    output_dir = config_parser.get("build_options", "output_dir")
+	#temporary hardcoded source file
+    build_bot.build("E:\\Studying\\Web-server-of-the-algorithms\\build_bot\\code_to_compile\\basic.cpp", os.path.join(output_dir, "basic.exe"))
+	
+    new_algo.save()
+	
     return HttpResponse(request)
 
 
