@@ -4,10 +4,8 @@ from build_bot.languages.cs_language import CSLanguage
 from build_bot.languages.fp_language import FPLanguage
 
 if sys.version_info > (3, 0):
-    # Python 3 code in this block
     import configparser
 else:
-    # Python 2 code in this block
     import ConfigParser
 
 import os

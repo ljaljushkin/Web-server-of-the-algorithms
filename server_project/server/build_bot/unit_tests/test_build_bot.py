@@ -9,7 +9,7 @@ from build_bot.languages.fp_language import FPLanguage
 test_name = __name__
 
 
-@pytest.mark.usefixtures("test_config_fixture")
+@pytest.mark.usefixtures("test_build_directory_fixture", "test_config_fixture")
 class BuildBotTests(unittest.TestCase):
     def test_are_all_fixture_attributes_set(self):
         assert hasattr(self, "build_dir")

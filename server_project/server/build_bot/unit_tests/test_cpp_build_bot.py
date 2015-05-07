@@ -9,7 +9,7 @@ from build_bot.languages.cpp_language import CPPLanguage
 test_name = __name__
 
 
-@pytest.mark.usefixtures("test_config_fixture")
+@pytest.mark.usefixtures("test_build_directory_fixture", "test_config_fixture")
 class CppBuildBotTests(unittest.TestCase):
     def setUp(self):
         self.test_file_name = "basic"

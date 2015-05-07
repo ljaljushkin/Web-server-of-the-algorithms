@@ -1,25 +1,25 @@
-from django.http import HttpResponse
-from django.shortcuts import render
-
-# Create your views here.
-from algorithms.models import Algorithm, TestData, User, Status
 import sys
-sys.path.append("E:\\Studying\\Web-server-of-the-algorithms\\build_bot")
-sys.path.append("E:\\Studying\\Web-server-of-the-algorithms\\build_bot\\Languages")
-from build_bot import BuildBot
-from cpp_language import CPPLanguage
-import os
+from build_bot.common.cmd_utils import shell, split_lines
+
 if sys.version_info > (3, 0):
     import configparser
 else:
     import ConfigParser
+
+import os
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from algorithms.models import Algorithm, TestData, User, Status
+from build_bot.build_bot import BuildBot
+from build_bot.languages.cpp_language import CPPLanguage
 
 
 def index(request):
     alg_obj_list = Algorithm.objects.all()
     algs_list = []
 
-    for item in alg_obj_list :
+    for item in alg_obj_list:
         algs_list.append(item.algorithm_name)
 
     return render(request,
@@ -32,9 +32,9 @@ def alg_details(request, alg_name):
     algorithm = Algorithm.objects.filter(algorithm_name=alg_name).first();
     return render(request,
                   "algorithms/alg_details.html",
-        {"name":algorithm.algorithm_name,
-        "description":algorithm.algorithm_description,
-        "source_code":algorithm.source_code})
+                  {"name": algorithm.algorithm_name,
+                   "description": algorithm.algorithm_description,
+                   "source_code": algorithm.source_code})
 
 
 def add_algorithm(request):
@@ -71,24 +71,44 @@ def submit_algorithm(request):
                                         user_id=user,
                                         status_id=status,
                                         language="cpp")
-    
-	
+
     if sys.version_info > (3, 0):
         config_parser = configparser.ConfigParser()
     else:
         config_parser = ConfigParser.ConfigParser()
-	
-    is_config_read_ok = config_parser.read("E:\\Studying\\Web-server-of-the-algorithms\\server_project\\server\\algorithms\\config.cfg")
+
+    project_path = os.path.dirname(os.path.dirname(__file__))
+    is_config_read_ok = config_parser.read(os.path.join(project_path, "config.cfg"))
     assert is_config_read_ok
 
-    cpp_language_with_config = CPPLanguage(config_parser)
-    build_bot = BuildBot(cpp_language_with_config, config_parser)
-    output_dir = config_parser.get("build_options", "output_dir")
-	#temporary hardcoded source file
-    build_bot.build("E:\\Studying\\Web-server-of-the-algorithms\\build_bot\\code_to_compile\\basic.cpp", os.path.join(output_dir, "basic.exe"))
-	
+    cpp_language = CPPLanguage(config_parser)
+    build_bot = BuildBot(cpp_language, config_parser)
+
+    output_dir = config_parser.get("build_options", "output_path")
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    code_path = project_path + os.sep + "build_bot" + os.sep + "code_to_compile" + os.sep + "basic.cpp"
+    exe_path = os.path.join(output_dir, "basic.exe")
+    (ret_code, out, err) = build_bot.build(code_path, exe_path)
+    assert ret_code == 0
+
+    new_algo.source_code = "OUTPUT STREAM FROM BUILD---> "
+    for line in out.splitlines():
+        new_algo.source_code += line.strip().decode('utf-8')
+
+    new_algo.build_options = "ERROR STREAM FROM BUILD---> "
+    for line in err.splitlines():
+        new_algo.build_options += line.strip().decode('utf-8')
+
+    (ret_code, out, err) = shell(exe_path)
+    assert ret_code == 0
+    assert split_lines(out).pop(0) == "This is a native C++ program."
+
+    new_algo.algorithm_description = "OUTPUT STREAM FROM EXE---> "
+    for line in out.splitlines():
+        new_algo.algorithm_description += line.strip().decode('utf-8')
+
     new_algo.save()
-	
+
     return HttpResponse(request)
-
-
