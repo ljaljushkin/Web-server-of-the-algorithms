@@ -1,5 +1,7 @@
 import sys
-from build_bot.common.cmd_utils import shell, split_lines
+from build_bot_project.build_bot import BuildBot
+from build_bot_project.common.cmd_utils import shell, split_lines
+from build_bot_project.languages.cpp_language import CPPLanguage
 
 if sys.version_info > (3, 0):
     import configparser
@@ -11,8 +13,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from algorithms.models import Algorithm, TestData, User, Status
-from build_bot.build_bot import BuildBot
-from build_bot.languages.cpp_language import CPPLanguage
 
 
 def index(request):
@@ -29,7 +29,7 @@ def index(request):
 
 def alg_details(request, alg_name):
     print(alg_name)
-    algorithm = Algorithm.objects.filter(algorithm_name=alg_name).first();
+    algorithm = Algorithm.objects.filter(algorithm_name=alg_name).first()
     return render(request,
                   "algorithms/alg_details.html",
                   {"name": algorithm.algorithm_name,
@@ -82,15 +82,15 @@ def submit_algorithm(request):
     assert is_config_read_ok
 
     cpp_language = CPPLanguage(config_parser)
-    build_bot = BuildBot(cpp_language, config_parser)
+    build_bot_project = BuildBot(cpp_language, config_parser)
 
     output_dir = config_parser.get("build_options", "output_path")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    code_path = project_path + os.sep + "build_bot" + os.sep + "code_to_compile" + os.sep + "basic.cpp"
+    code_path = project_path + os.sep + "build_bot_project" + os.sep + "code_to_compile" + os.sep + "basic.cpp"
     exe_path = os.path.join(output_dir, "basic.exe")
-    (ret_code, out, err) = build_bot.build(code_path, exe_path)
+    (ret_code, out, err) = build_bot_project.build(code_path, exe_path)
     assert ret_code == 0
 
     new_algo.source_code = "OUTPUT STREAM FROM BUILD---> "

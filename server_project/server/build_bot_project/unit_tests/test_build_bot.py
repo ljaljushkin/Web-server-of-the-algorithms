@@ -1,9 +1,9 @@
 import unittest
 import pytest
-from build_bot.build_bot import BuildBot
-from build_bot.languages.cpp_language import CPPLanguage
-from build_bot.languages.cs_language import CSLanguage
-from build_bot.languages.fp_language import FPLanguage
+from build_bot_project.build_bot import BuildBot
+from build_bot_project.languages.cpp_language import CPPLanguage
+from build_bot_project.languages.cs_language import CSLanguage
+from build_bot_project.languages.fp_language import FPLanguage
 
 
 test_name = __name__

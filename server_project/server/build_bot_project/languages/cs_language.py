@@ -1,5 +1,5 @@
 import os
-from build_bot.languages.language import Language
+from build_bot_project.languages.language import Language
 
 
 class CSLanguage(Language):

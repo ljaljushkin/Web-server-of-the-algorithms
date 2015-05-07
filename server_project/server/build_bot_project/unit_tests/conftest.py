@@ -1,7 +1,8 @@
 import sys
-from build_bot.languages.cpp_language import CPPLanguage
-from build_bot.languages.cs_language import CSLanguage
-from build_bot.languages.fp_language import FPLanguage
+from build_bot_project.languages.cpp_language import CPPLanguage
+from build_bot_project.languages.cs_language import CSLanguage
+from build_bot_project.languages.fp_language import FPLanguage
+
 
 if sys.version_info > (3, 0):
     import configparser
