@@ -1,8 +1,7 @@
 import os
 import tempfile
-
-from common.cmd_utils import set_env, screen_str
-from language import Language
+from build_bot.common.cmd_utils import screen_str, set_env
+from build_bot.languages.language import Language
 
 
 class CPPLanguage(Language):
@@ -16,16 +15,12 @@ class CPPLanguage(Language):
     def __init__(self, config_parser=None):
         Language.__init__(self)
         self.compiler_dir = self.DEFAULT_COMPILER_DIR
-        self.compilervars_dir = self.DEFAULT_COMPILER_DIR
         if config_parser:
             compiler_dir = config_parser.get('compiler_paths', 'cpp_path')
             if compiler_dir:
                 self.compiler_dir = compiler_dir
-            compilervars_dir = config_parser.get('compilervars_paths', 'cpp_vars_path')
-            if compilervars_dir:
-                self.compilervars_dir = compilervars_dir
         self.compiler_path = os.path.join(self.compiler_dir, self.COMPILER_FILE)
-        self.vc_bat_path = os.path.join(self.compilervars_dir, self.VC_BAT_FILE)
+        self.vc_bat_path = os.path.join(os.path.dirname(self.compiler_dir), self.VC_BAT_FILE)
         set_env(screen_str(self.vc_bat_path))
 
     def get_compiler_path(self):
@@ -38,6 +33,6 @@ class CPPLanguage(Language):
         temp_dir = tempfile.gettempdir()
         compile_cmd = screen_str(self.compiler_path) \
                       + " " + code_path \
-                      + " /Fo " + temp_dir \
-                      + " /Fe " + exe_path
+                      + " /Fo" + temp_dir \
+                      + " /Fe" + exe_path
         return compile_cmd

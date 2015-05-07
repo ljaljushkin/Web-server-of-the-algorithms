@@ -1,17 +1,16 @@
-import os
 import unittest
 import pytest
-from build_bot import BuildBot
-from cpp_language import CPPLanguage
-from cs_language import CSLanguage
-from fp_language import FPLanguage
+from build_bot.build_bot import BuildBot
+from build_bot.languages.cpp_language import CPPLanguage
+from build_bot.languages.cs_language import CSLanguage
+from build_bot.languages.fp_language import FPLanguage
+
 
 test_name = __name__
 
 
 @pytest.mark.usefixtures("test_config_fixture")
 class BuildBotTests(unittest.TestCase):
-
     def test_are_all_fixture_attributes_set(self):
         assert hasattr(self, "build_dir")
         assert hasattr(self, "build_dir_bin")

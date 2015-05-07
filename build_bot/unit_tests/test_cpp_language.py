@@ -1,8 +1,9 @@
 import os
 import unittest
 import pytest
-from cmd_utils import shell, split_lines, screen_str, find_tool
-from cpp_language import CPPLanguage
+from build_bot.common.cmd_utils import find_tool, split_lines, screen_str
+from build_bot.common.cmd_utils import shell
+from build_bot.languages.cpp_language import CPPLanguage
 
 test_name = __name__
 
