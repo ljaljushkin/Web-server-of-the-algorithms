@@ -1,14 +1,15 @@
 import os
 import unittest
 import pytest
-from build_bot import BuildBot
-from cmd_utils import shell, split_lines
-from cpp_language import CPPLanguage
+from build_bot_project.build_bot import BuildBot
+from build_bot_project.common.cmd_utils import shell
+from build_bot_project.common.cmd_utils import split_lines
+from build_bot_project.languages.cpp_language import CPPLanguage
 
 test_name = __name__
 
 
-@pytest.mark.usefixtures("test_config_fixture")
+@pytest.mark.usefixtures("test_build_directory_fixture", "test_config_fixture")
 class CppBuildBotTests(unittest.TestCase):
     def setUp(self):
         self.test_file_name = "basic"

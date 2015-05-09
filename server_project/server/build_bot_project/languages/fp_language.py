@@ -1,12 +1,11 @@
 import os
-from language import Language
+from build_bot_project.languages.language import Language
 
 
-class CSLanguage(Language):
+class FPLanguage(Language):
+    COMPILER_FILE = "fp_compiler.exe"
 
-    COMPILER_FILE = "cs_compiler.exe"
-
-    DEFAULT_COMPILER_DIR = "/path/to/cs/compiler"
+    DEFAULT_COMPILER_DIR = "/path/to/fp/compiler"
     DEFAULT_COMPILER_PATH = os.path.join(DEFAULT_COMPILER_DIR, COMPILER_FILE)
 
     def __init__(self, config_parser=None):
@@ -14,7 +13,7 @@ class CSLanguage(Language):
         self.compiler_dir = self.DEFAULT_COMPILER_DIR
         self.compiler_path = os.path.join(self.compiler_dir, self.COMPILER_FILE)
         if config_parser:
-            compiler_dir = config_parser.get('compiler_paths', 'cs_path')
+            compiler_dir = config_parser.get('compiler_paths', 'fp_path')
             if compiler_dir:
                 self.compiler_dir = compiler_dir
 

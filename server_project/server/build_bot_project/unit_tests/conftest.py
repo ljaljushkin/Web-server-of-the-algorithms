@@ -1,19 +1,17 @@
 import sys
+from build_bot_project.languages.cpp_language import CPPLanguage
+from build_bot_project.languages.cs_language import CSLanguage
+from build_bot_project.languages.fp_language import FPLanguage
+
 
 if sys.version_info > (3, 0):
-    # Python 3 code in this block
     import configparser
 else:
-    # Python 2 code in this block
     import ConfigParser
 
 import os
 import shutil
 import pytest
-from cpp_language import CPPLanguage
-from cs_language import CSLanguage
-from fp_language import FPLanguage
-
 
 @pytest.fixture(scope="class")
 def test_build_directory_fixture(request):
