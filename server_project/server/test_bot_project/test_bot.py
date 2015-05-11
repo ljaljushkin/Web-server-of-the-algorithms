@@ -1,4 +1,4 @@
-from test_bot_project.common.cmd_utils import shell, screen_str
+from common.cmd_utils import shell, screen_str
 from test_bot_project.itest_bot import ITestBot
 
 

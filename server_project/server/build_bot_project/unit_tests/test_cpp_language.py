@@ -1,7 +1,9 @@
 import os
 import unittest
+
 import pytest
-from build_bot_project.common.cmd_utils import find_tool, shell, split_lines, screen_str
+
+from common.cmd_utils import find_tool, shell, split_lines, screen_str
 from build_bot_project.languages.cpp_language import CPPLanguage
 
 

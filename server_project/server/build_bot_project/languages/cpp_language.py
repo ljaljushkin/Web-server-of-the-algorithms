@@ -1,6 +1,7 @@
 import os
 import tempfile
-from build_bot_project.common.cmd_utils import screen_str, set_env
+
+from common.cmd_utils import screen_str, set_env
 from build_bot_project.languages.language import Language
 
 
@@ -8,7 +9,7 @@ class CPPLanguage(Language):
     COMPILER_FILE = "cl.exe"
     VC_BAT_FILE = "vcvarsall.bat"
 
-    DEFAULT_COMPILER_DIR = "C:\\Program Files (x86)\\Microsoft Visual Studio 10.0\\VC\\bin"
+    DEFAULT_COMPILER_DIR = "C:\\Program Files (x86)\\Microsoft Visual Studio 11.0\\VC\\bin"
     DEFAULT_VC_BAT_PATH = os.path.join(os.path.dirname(DEFAULT_COMPILER_DIR), VC_BAT_FILE)
     DEFAULT_COMPILER_PATH = os.path.join(DEFAULT_COMPILER_DIR, COMPILER_FILE)
 

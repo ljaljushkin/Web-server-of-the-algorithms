@@ -32,13 +32,8 @@ def test_build_directory_fixture(request):
 
 @pytest.fixture(scope="class")
 def test_config_fixture(request, test_build_directory_fixture):
-    config_file_path = os.path.join(request.cls.build_dir, "test_build_bot.cfg")
-    f = open(config_file_path, "w+")
-    f.write("[compiler_paths]\n")
-    f.write("cpp_path = " + CPPLanguage.DEFAULT_COMPILER_DIR + "\n")
-    f.write("cs_path = " + CSLanguage.DEFAULT_COMPILER_DIR + "\n")
-    f.write("fp_path = " + FPLanguage.DEFAULT_COMPILER_DIR + "\n")
-    f.close()
+    project_path = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    config_file_path = os.path.join(project_path, "config.cfg")
 
     if sys.version_info > (3, 0):
         request.cls.config_parser = configparser.ConfigParser()

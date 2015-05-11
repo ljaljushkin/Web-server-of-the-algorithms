@@ -1,7 +1,9 @@
 import sys
+
 from build_bot_project.build_bot import BuildBot
-from build_bot_project.common.cmd_utils import shell, split_lines
+from common.cmd_utils import shell, split_lines
 from build_bot_project.languages.cpp_language import CPPLanguage
+
 
 if sys.version_info > (3, 0):
     import configparser
