@@ -89,5 +89,4 @@ class CPPLanguageTests(unittest.TestCase):
     def _compile(self, language):
         compile_cmd = screen_str(language.compiler_path) + " " + self.test_src_file_path \
                       + " /Fo" + self.build_dir + os.sep + " /Fe" + self.test_exe_file_path
-        print(compile_cmd)
         return shell(compile_cmd)

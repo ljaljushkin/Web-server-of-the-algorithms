@@ -23,20 +23,20 @@ class BuildBotTests(unittest.TestCase):
 
     def test_can_create_build_bot_for_cpp_language_without_config(self):
         language = CPPLanguage()
-        build_bot = BuildBot(language, self.config_parser)
+        build_bot = BuildBot(language)
         self.assertEqual(build_bot.language.compiler_path, CPPLanguage.DEFAULT_COMPILER_PATH)
 
     def test_can_create_build_bot_for_cpp_language_with_config(self):
         language = CPPLanguage(self.config_parser)
-        build_bot = BuildBot(language, self.config_parser)
+        build_bot = BuildBot(language)
         self.assertEqual(build_bot.language.compiler_path, self.cpp_compiler_path)
 
     def test_can_create_build_bot_for_cs_language(self):
         language = CSLanguage()
-        build_bot = BuildBot(language, self.config_parser)
+        build_bot = BuildBot(language)
         self.assertEqual(build_bot.language.compiler_path, self.cs_compiler_path)
 
     def test_can_create_build_bot_for_fp_language(self):
         language = FPLanguage()
-        build_bot = BuildBot(language, self.config_parser)
+        build_bot = BuildBot(language)
         self.assertEqual(build_bot.language.compiler_path, self.fp_compiler_path)

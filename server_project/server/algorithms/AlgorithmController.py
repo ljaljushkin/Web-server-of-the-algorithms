@@ -43,8 +43,6 @@ class AlgorithmController(IAlgorithmController):
 
         exe_path = self._getExePath(algorithm)
         self.build_bot = BuildBot(language)
-        print exe_path
-        print str(exe_path)
         (ret_code, out, err) = self.build_bot.build(source_file, str(exe_path))
 
         if ret_code != 0:
@@ -64,22 +62,8 @@ class AlgorithmController(IAlgorithmController):
         # (ret_code, out, err) = RunBot.start()
         return 0, "This is a native C++ program.", "fake_err"
 
-
-    # work_dir/id/alg_id/
-    # source.cpp
-    # build.exe
-    #                       data.txt
-
     def search_algorithm(self, name):
         return Algorithm.objects.get(name__iregex=r'\y{0}\y'.format(name)).get()
 
     def get_algorithms_list(self):
         return Algorithm.objects.get()
-
-
-        # add(algorithm) : void
-        # get(name) : algorithm
-        # update(algorithm) : void
-        # search(string) : List<algorithm>
-        # remove(name) : void
-        # getList() : List<algorithm>

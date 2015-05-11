@@ -23,7 +23,6 @@ config_parser = None
 
 
 def init():
-    print "Init"
     if sys.version_info > (3, 0):
         config_parser = configparser.ConfigParser()
     else:
@@ -49,7 +48,6 @@ def index(request):
 
 
 def alg_details(request, alg_name):
-    print(alg_name)
     algorithm = Algorithm.objects.filter(name=alg_name).first()
     return render(request,
                   "algorithms/alg_details.html",
@@ -67,10 +65,6 @@ def add_algorithm(request):
 
 
 def submit_algorithm(request):
-    print("name = " + request.POST["name"])
-    print("description = " + request.POST["description"])
-    print("price = " + request.POST["price"])
-
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
                                         run_options=request.POST["run_string"])

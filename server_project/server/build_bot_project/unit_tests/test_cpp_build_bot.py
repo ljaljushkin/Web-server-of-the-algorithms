@@ -27,7 +27,7 @@ class CppBuildBotTests(unittest.TestCase):
         self.test_exe_path = os.path.join(self.output_dir, self.test_exe_name)
 
         self.language = CPPLanguage(self.config_parser)
-        self.build_bot = BuildBot(self.language, self.config_parser)
+        self.build_bot = BuildBot(self.language)
 
     def test_are_all_fixture_attributes_set(self):
         assert hasattr(self, "build_dir")
