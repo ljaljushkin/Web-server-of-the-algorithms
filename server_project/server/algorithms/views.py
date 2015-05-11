@@ -22,7 +22,7 @@ def index(request):
     algs_list = []
 
     for item in alg_obj_list:
-        algs_list.append(item.algorithm_name)
+        algs_list.append(item.name)
 
     return render(request,
                   "algorithms/index.html",
@@ -31,11 +31,11 @@ def index(request):
 
 def alg_details(request, alg_name):
     print(alg_name)
-    algorithm = Algorithm.objects.filter(algorithm_name=alg_name).first()
+    algorithm = Algorithm.objects.filter(name=alg_name).first()
     return render(request,
                   "algorithms/alg_details.html",
-                  {"name": algorithm.algorithm_name,
-                   "description": algorithm.algorithm_description,
+                  {"name": algorithm.name,
+                   "description": algorithm.description,
                    "source_code": algorithm.source_code})
 
 
@@ -61,11 +61,11 @@ def submit_algorithm(request):
                                account_cash=666)
     user.save()
 
-    status = Status.objects.create(status_name="tanya_OK")
+    status = Status.objects.create(name="tanya_OK")
     status.save()
 
-    new_algo = Algorithm.objects.create(algorithm_name=request.POST["name"],
-                                        algorithm_description=request.POST["description"],
+    new_algo = Algorithm.objects.create(name=request.POST["name"],
+                                        description=request.POST["description"],
                                         source_code=request.POST["code"],
                                         build_options=request.POST["build_string"],
                                         testdata_id=test_data,
@@ -84,9 +84,9 @@ def submit_algorithm(request):
     assert is_config_read_ok
 
     cpp_language = CPPLanguage(config_parser)
-    build_bot_project = BuildBot(cpp_language, config_parser)
+    build_bot_project = BuildBot(cpp_language)
 
-    output_dir = config_parser.get("build_options", "output_path")
+    output_dir = config_parser.get("general", "work_dir")
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -107,9 +107,9 @@ def submit_algorithm(request):
     assert ret_code == 0
     assert split_lines(out).pop(0) == "This is a native C++ program."
 
-    new_algo.algorithm_description = "OUTPUT STREAM FROM EXE---> "
+    new_algo.description = "OUTPUT STREAM FROM EXE---> "
     for line in out.splitlines():
-        new_algo.algorithm_description += line.strip().decode('utf-8')
+        new_algo.description += line.strip().decode('utf-8')
 
     new_algo.save()
 

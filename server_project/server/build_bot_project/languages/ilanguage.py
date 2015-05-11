@@ -1,7 +1,7 @@
 import abc
 
 
-class Language:
+class ILanguage:
     def __init__(self):
         pass
 

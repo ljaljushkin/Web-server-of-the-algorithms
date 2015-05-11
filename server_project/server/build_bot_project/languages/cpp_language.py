@@ -2,10 +2,10 @@ import os
 import tempfile
 
 from common.cmd_utils import screen_str, set_env
-from build_bot_project.languages.language import Language
+from build_bot_project.languages.ilanguage import ILanguage
 
 
-class CPPLanguage(Language):
+class CPPLanguage(ILanguage):
     COMPILER_FILE = "cl.exe"
     VC_BAT_FILE = "vcvarsall.bat"
 
@@ -14,7 +14,7 @@ class CPPLanguage(Language):
     DEFAULT_COMPILER_PATH = os.path.join(DEFAULT_COMPILER_DIR, COMPILER_FILE)
 
     def __init__(self, config_parser=None):
-        Language.__init__(self)
+        ILanguage.__init__(self)
         self.compiler_dir = self.DEFAULT_COMPILER_DIR
         if config_parser:
             compiler_dir = config_parser.get('compiler_paths', 'cpp_path')
