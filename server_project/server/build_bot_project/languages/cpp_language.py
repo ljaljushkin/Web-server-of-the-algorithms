@@ -32,8 +32,10 @@ class CPPLanguage(ILanguage):
 
     def get_build_command(self, code_path, exe_path):
         temp_dir = tempfile.gettempdir()
+        print exe_path
+        print str(exe_path)
         compile_cmd = screen_str(self.compiler_path) \
                       + " " + code_path \
                       + " /Fo" + temp_dir \
-                      + " /Fe" + exe_path
+                      + " /Fe" + str(exe_path)
         return compile_cmd

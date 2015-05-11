@@ -14,11 +14,11 @@ class AlgorithmController(IAlgorithmController):
         self.work_dir = self.config_parser.get("general", "work_dir")
 
     def remove_algorithm(self, name):
-        currentAlgorithm = Algorithm.objects.get(name=name).get()
+        currentAlgorithm = Algorithm.objects.filter(name=name).get()
         currentAlgorithm.delete()
 
     def get_algorithm(self, name):
-        return Algorithm.objects.get(name=name).get()
+        return Algorithm.objects.filter(name=name).get()
 
     def update_algorithm(self, algorithm):
         pass
@@ -34,24 +34,41 @@ class AlgorithmController(IAlgorithmController):
         elif algorithm.language == "fp":
             language = FPLanguage(self.config_parser)
 
-        dir = self.work_dir + os.sep + algorithm.user_id + os.sep + algorithm.id
+        dir = self._getAlgorithmDir(algorithm)
         os.makedirs(dir)
         source_file = dir + os.sep + algorithm.name + "." + algorithm.language
 
-        with open(source_file, "w+") as source_file:
-            source_file.write(algorithm.source_code)
+        with open(source_file, "wb") as file:
+            file.write(algorithm.source_code)
 
-        exe_path = dir + os.sep + algorithm.name + ".exe"
+        exe_path = self._getExePath(algorithm)
         self.build_bot = BuildBot(language)
-        (ret_code, out, err) = self.build_bot.build(source_file, exe_path)
+        print exe_path
+        print str(exe_path)
+        (ret_code, out, err) = self.build_bot.build(source_file, str(exe_path))
+
         if ret_code != 0:
             self.remove_algorithm(algorithm.name)
 
+        return ret_code, out, err
+
+    def _getAlgorithmDir(self, algorithm):
+        return self.work_dir + os.sep + str(algorithm.user_id.user_id) + os.sep + str(algorithm.algorithm_id)
+
+    def _getExePath(self,algorithm):
+        return self._getAlgorithmDir(algorithm) + os.sep + algorithm.name + ".exe"
+
+    def run_algorithm(self, name):
+        algorithm = self.get_algorithm(name)
+        exe_path = self._getExePath(algorithm)
+        # (ret_code, out, err) = RunBot.start()
+        return 0, "This is a native C++ program.", "fake_err"
+
+
     # work_dir/id/alg_id/
     # source.cpp
-    #                           build.exe
+    # build.exe
     #                       data.txt
-
 
     def search_algorithm(self, name):
         return Algorithm.objects.get(name__iregex=r'\y{0}\y'.format(name)).get()

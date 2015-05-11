@@ -5,11 +5,15 @@ from build_bot_project.ibuild_bot import IBuildBot
 class IAlgorithmController:
 
     def __init__(self):
-        self.build_bot = IBuildBot()
+        build_bot = IBuildBot()
         pass
 
     @abstractmethod
     def add_algorithm(self, algorithm):
+        pass
+
+    @abstractmethod
+    def run_algorithm(self, name):
         pass
 
     @abstractmethod
