@@ -17,6 +17,9 @@ class BuildBotTests(unittest.TestCase):
         assert hasattr(self, "src_code_dir")
         assert hasattr(self, "config_parser")
         assert hasattr(self, "is_config_read_ok")
+        assert hasattr(self, "cpp_compiler_path")
+        assert hasattr(self, "cs_compiler_path")
+        assert hasattr(self, "fp_compiler_path")
 
     def test_can_create_build_bot_for_cpp_language_without_config(self):
         language = CPPLanguage()
@@ -26,14 +29,14 @@ class BuildBotTests(unittest.TestCase):
     def test_can_create_build_bot_for_cpp_language_with_config(self):
         language = CPPLanguage(self.config_parser)
         build_bot = BuildBot(language, self.config_parser)
-        self.assertEqual(build_bot.language.compiler_path, CPPLanguage.DEFAULT_COMPILER_PATH)
+        self.assertEqual(build_bot.language.compiler_path, self.cpp_compiler_path)
 
     def test_can_create_build_bot_for_cs_language(self):
         language = CSLanguage()
         build_bot = BuildBot(language, self.config_parser)
-        self.assertEqual(build_bot.language.compiler_path, CSLanguage.DEFAULT_COMPILER_PATH)
+        self.assertEqual(build_bot.language.compiler_path, self.cs_compiler_path)
 
     def test_can_create_build_bot_for_fp_language(self):
         language = FPLanguage()
         build_bot = BuildBot(language, self.config_parser)
-        self.assertEqual(build_bot.language.compiler_path, FPLanguage.DEFAULT_COMPILER_PATH)
+        self.assertEqual(build_bot.language.compiler_path, self.fp_compiler_path)
