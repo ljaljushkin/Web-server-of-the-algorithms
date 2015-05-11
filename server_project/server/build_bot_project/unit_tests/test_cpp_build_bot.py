@@ -1,10 +1,13 @@
 import os
 import unittest
+
 import pytest
+
 from build_bot_project.build_bot import BuildBot
-from build_bot_project.common.cmd_utils import shell
-from build_bot_project.common.cmd_utils import split_lines
+from common.cmd_utils import shell
+from common.cmd_utils import split_lines
 from build_bot_project.languages.cpp_language import CPPLanguage
+
 
 test_name = __name__
 

@@ -1,6 +1,7 @@
 import os
 import tempfile
-from build_bot_project.common.cmd_utils import screen_str, set_env
+
+from common.cmd_utils import screen_str, set_env
 from build_bot_project.languages.language import Language
 
 
