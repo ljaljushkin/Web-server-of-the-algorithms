@@ -3,8 +3,8 @@ from test_bot_project.itest_bot import ITestBot
 
 
 class TestBot(ITestBot):
-    def __init__(self, config_parser):
-        ITestBot.__init__(self, config_parser)
+    def __init__(self):
+        ITestBot.__init__(self)
 
     def get_run_command(self, file, run_string):
         run_cmd = screen_str(file) \

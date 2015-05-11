@@ -10,3 +10,7 @@ class IBuildBot:
     def build(self, code_path, exe_path):
         pass
 
+    @abstractmethod
+    def set_language(self, language):
+        pass
+

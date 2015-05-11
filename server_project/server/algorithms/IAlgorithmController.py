@@ -1,12 +1,13 @@
-from abc import abstractmethod, abstractproperty, ABCMeta
+from abc import abstractmethod
 from build_bot_project.ibuild_bot import IBuildBot
+from test_bot_project.itest_bot import ITestBot
 
 
 class IAlgorithmController:
 
     def __init__(self):
         build_bot = IBuildBot()
-        pass
+        test_bot = ITestBot()
 
     @abstractmethod
     def add_algorithm(self, algorithm):

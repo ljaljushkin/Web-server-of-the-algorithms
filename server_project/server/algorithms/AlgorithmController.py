@@ -5,17 +5,20 @@ from build_bot_project.build_bot import BuildBot
 from build_bot_project.languages.cpp_language import CPPLanguage
 from build_bot_project.languages.cs_language import CSLanguage
 from build_bot_project.languages.fp_language import FPLanguage
+from test_bot_project.test_bot import TestBot
 
 
 class AlgorithmController(IAlgorithmController):
     def __init__(self, config_parser):
         IAlgorithmController.__init__(self)
+        self.build_bot = BuildBot()
+        self.test_bot = TestBot()
         self.config_parser = config_parser
         self.work_dir = self.config_parser.get("general", "work_dir")
 
     def remove_algorithm(self, name):
-        currentAlgorithm = Algorithm.objects.filter(name=name).get()
-        currentAlgorithm.delete()
+        current_algorithm = Algorithm.objects.filter(name=name).get()
+        current_algorithm.delete()
 
     def get_algorithm(self, name):
         return Algorithm.objects.filter(name=name).get()
@@ -34,15 +37,16 @@ class AlgorithmController(IAlgorithmController):
         elif algorithm.language == "fp":
             language = FPLanguage(self.config_parser)
 
-        dir = self._getAlgorithmDir(algorithm)
-        os.makedirs(dir)
-        source_file = dir + os.sep + algorithm.name + "." + algorithm.language
+        self.build_bot.set_language(language)
 
-        with open(source_file, "wb") as file:
-            file.write(algorithm.source_code)
+        algorithm_dir = self._get_algorithm_dir(algorithm)
+        os.makedirs(algorithm_dir)
+        source_file = algorithm_dir + os.sep + algorithm.name + "." + algorithm.language
 
-        exe_path = self._getExePath(algorithm)
-        self.build_bot = BuildBot(language)
+        with open(source_file, "wb") as src_file:
+            src_file.write(algorithm.source_code)
+
+        exe_path = self._get_exe_path(algorithm)
         (ret_code, out, err) = self.build_bot.build(source_file, str(exe_path))
 
         if ret_code != 0:
@@ -50,20 +54,20 @@ class AlgorithmController(IAlgorithmController):
 
         return ret_code, out, err
 
-    def _getAlgorithmDir(self, algorithm):
-        return self.work_dir + os.sep + str(algorithm.user_id.user_id) + os.sep + str(algorithm.algorithm_id)
-
-    def _getExePath(self,algorithm):
-        return self._getAlgorithmDir(algorithm) + os.sep + algorithm.name + ".exe"
-
     def run_algorithm(self, name):
         algorithm = self.get_algorithm(name)
-        exe_path = self._getExePath(algorithm)
-        # (ret_code, out, err) = RunBot.start()
-        return 0, "This is a native C++ program.", "fake_err"
+        exe_path = self._get_exe_path(algorithm)
+        return self.test_bot.run(file=exe_path,
+                                 run_string=algorithm.testdata_id.run_options)
 
     def search_algorithm(self, name):
         return Algorithm.objects.get(name__iregex=r'\y{0}\y'.format(name)).get()
 
     def get_algorithms_list(self):
         return Algorithm.objects.get()
+
+    def _get_algorithm_dir(self, algorithm):
+        return self.work_dir + os.sep + str(algorithm.user_id.user_id) + os.sep + str(algorithm.algorithm_id)
+
+    def _get_exe_path(self, algorithm):
+        return self._get_algorithm_dir(algorithm) + os.sep + algorithm.name + ".exe"
