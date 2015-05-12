@@ -1,12 +1,16 @@
 from abc import abstractmethod
+from build_bot_project.languages.ilanguage import ILanguage
 
 
 class IBuildBot:
-    def __init__(self, language, config_parser):
-        self.language = language
-        self.config_parser = config_parser
+    def __init__(self):
+        self.language = ILanguage()
 
     @abstractmethod
     def build(self, code_path, exe_path):
+        pass
+
+    @abstractmethod
+    def set_language(self, language):
         pass
 

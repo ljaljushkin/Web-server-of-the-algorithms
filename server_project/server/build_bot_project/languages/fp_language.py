@@ -1,15 +1,15 @@
 import os
-from build_bot_project.languages.language import Language
+from build_bot_project.languages.ilanguage import ILanguage
 
 
-class FPLanguage(Language):
+class FPLanguage(ILanguage):
     COMPILER_FILE = "fp_compiler.exe"
 
     DEFAULT_COMPILER_DIR = "/path/to/fp/compiler"
     DEFAULT_COMPILER_PATH = os.path.join(DEFAULT_COMPILER_DIR, COMPILER_FILE)
 
     def __init__(self, config_parser=None):
-        Language.__init__(self)
+        ILanguage.__init__(self)
         self.compiler_dir = self.DEFAULT_COMPILER_DIR
         self.compiler_path = os.path.join(self.compiler_dir, self.COMPILER_FILE)
         if config_parser:

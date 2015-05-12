@@ -1,7 +1,7 @@
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 # * Rearrange models' order
-#   * Make sure each model has one field with primary_key=True
+# * Make sure each model has one field with primary_key=True
 #   * Remove `managed = True` lines for those models you wish to give write DB access
 # Feel free to rename the models, but don't rename db_table values or field names.
 #
@@ -35,7 +35,6 @@ class EnumField(models.Field):
 
 
 class User(models.Model):
-    # user_id = models.IntegerField(primary_key=True)
     user_id = models.AutoField(primary_key=True)
     login = models.CharField(max_length=45)
     password = models.CharField(max_length=45)
@@ -48,7 +47,6 @@ class User(models.Model):
 
 
 class TestData(models.Model):
-    # testdata_id = models.IntegerField(primary_key=True)
     testdata_id = models.AutoField(primary_key=True)
     input_data = models.CharField(max_length=1000)
     output_data = models.CharField(max_length=1000)
@@ -59,16 +57,24 @@ class TestData(models.Model):
         db_table = 'test_data'
 
 
+class Status(models.Model):
+    status_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=45)
+
+    class Meta:
+        managed = True
+        db_table = 'status'
+
+
 class Algorithm(models.Model):
-    # algorithm_id = models.IntegerField(primary_key=True)
     algorithm_id = models.AutoField(primary_key=True)
-    user_id = models.ForeignKey('User', db_column='user_id')
-    algorithm_name = models.CharField(unique=True, max_length=100)
-    algorithm_description = models.TextField(blank=True)
+    user_id = models.ForeignKey(User, db_column='user_id')
+    name = models.CharField(unique=True, max_length=100)
+    description = models.TextField(blank=True)
     source_code = models.TextField(blank=True)
-    status_id = models.ForeignKey('Status', db_column='status_id')
+    status_id = models.ForeignKey(Status, db_column='status_id')
     build_options = models.CharField(unique=False, max_length=1000)
-    testdata_id = models.ForeignKey('TestData', db_column='testdata_id')
+    testdata_id = models.ForeignKey(TestData, db_column='testdata_id')
     price = models.IntegerField()
     language = models.CharField(unique=False, max_length=100)
     # language = Language(max_length=20)
@@ -85,16 +91,6 @@ class Tag(models.Model):
     class Meta:
         managed = True
         db_table = 'tag'
-
-
-class Status(models.Model):
-    # status_id = models.IntegerField(primary_key=True)
-    status_id = models.AutoField(primary_key=True)
-    status_name = models.CharField(max_length=45)
-
-    class Meta:
-        managed = True
-        db_table = 'status'
 
 
 class TagList(models.Model):
