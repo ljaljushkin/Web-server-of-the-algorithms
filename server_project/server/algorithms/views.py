@@ -9,13 +9,16 @@ else:
     import ConfigParser
 
 import os
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
 from algorithms.models import Algorithm, TestData, User, Status
 
-
 def index(request):
+    login = []
+    if "login" in request.session.keys() :
+        login = request.session["login"] 
+        
     alg_obj_list = Algorithm.objects.all()
     algs_list = []
 
@@ -24,26 +27,69 @@ def index(request):
 
     return render(request,
                   "algorithms/index.html",
-                  {"algs_list": algs_list})
+                  {"algs_list": algs_list,
+                   "login" : login})
 
 
 def alg_details(request, alg_name):
+    login = []
+    if "login" in request.session.keys() :
+        login = request.session["login"] 
+
     print(alg_name)
     algorithm = Algorithm.objects.filter(algorithm_name=alg_name).first()
     return render(request,
                   "algorithms/alg_details.html",
                   {"name": algorithm.algorithm_name,
                    "description": algorithm.algorithm_description,
-                   "source_code": algorithm.source_code})
+                   "source_code": algorithm.source_code,
+                   "login" : login})
 
 
 def add_algorithm(request):
+    login = []
+    if "login" in request.session.keys() :
+        login = request.session["login"] 
+        
     return render(request,
                   "algorithms/add_algorithm.html",
+                    {"login" : login})
+
+def login(request):
+    if "login" in request.POST.keys() \
+    and "password" in request.POST.keys() :
+        user = User.objects.filter(login = request.POST["login"], password = request.POST["password"]).get()
+        if user != None :
+            request.session["login"] = user.login
+            return HttpResponseRedirect('/algorithms/')
+        else :
+            return HttpResponseRedirect('/algorithms/login/')
+   
+def logout(request):
+    try:
+        del request.session['login']
+    except KeyError:
+        pass
+    return HttpResponseRedirect('/algorithms/')
+   
+def register(request):
+    if "login" in request.POST.keys() \
+    and "email" in request.POST.keys() \
+    and "password" in request.POST.keys() :
+        print (request.POST["login"])
+        user = User.objects.create(login = request.POST["login"],
+                                    email = request.POST["email"],
+                                    password = request.POST["password"],
+                                    account_cash = 0)
+        user.save()
+    return render(request,
+                  "algorithms/register.html",
         {})
-
-
+		
 def submit_algorithm(request):
+    if not "login" in request.session :
+        return HttpResponseRedirect('/algorithms/login/')
+     
     print("name = " + request.POST["name"])
     print("description = " + request.POST["description"])
     print("price = " + request.POST["price"])
@@ -53,11 +99,7 @@ def submit_algorithm(request):
                                         run_options=request.POST["run_string"])
     test_data.save()
 
-    user = User.objects.create(login="tanya",
-                               password="zenit champion",
-                               email="fedor",
-                               account_cash=666)
-    user.save()
+    user = User.objects.filter(login=request.session["login"]).get()
 
     status = Status.objects.create(status_name="tanya_OK")
     status.save()
