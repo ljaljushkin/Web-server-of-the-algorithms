@@ -19,6 +19,9 @@ class AlgorithmController(IAlgorithmController):
 
     def remove_algorithm(self, name):
         current_algorithm = Algorithm.objects.filter(name=name).get()
+        # TODO: add full delete: remove status and test data
+        # current_algorithm.status_id.delete()
+        # current_algorithm.test_data_id.delete()
         current_algorithm.delete()
 
     def get_algorithm(self, name):

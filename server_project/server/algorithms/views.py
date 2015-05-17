@@ -75,6 +75,12 @@ def update_algorithm(request):
                                           language=request.POST["language"])
 
 
+def run_existing_algo(request):
+    algorithm_controller = create_algorithm_controller()
+    algorithm_controller.run_algorithm("TROLOLO_ALGORITHM_NAME")
+    return HttpResponse(request)
+
+
 def submit_algorithm(request):
     algorithm_controller = create_algorithm_controller()
 
@@ -123,7 +129,7 @@ def submit_algorithm(request):
     for line in out.splitlines():
         new_algo.description += line.strip().decode('utf-8')
 
-    test_data.run_options = "ERROR STREAM FROM BUILD---> "
+    test_data.run_options = "ERROR STREAM FROM BUILD--- "
     for line in err.splitlines():
         test_data.run_options += line.strip().decode('utf-8')
 
