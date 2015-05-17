@@ -22,10 +22,6 @@ class IAlgorithmController:
         pass
 
     @abstractmethod
-    def update_algorithm(self, algorithm):
-        pass
-
-    @abstractmethod
     def search_algorithm(self, name):
         pass
 

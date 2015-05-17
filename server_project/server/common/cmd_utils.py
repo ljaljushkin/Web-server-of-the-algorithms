@@ -2,8 +2,9 @@ import os
 import subprocess
 import tempfile
 
-ERROR_INVALID_FUNCTION = 1
-ERROR_PROC_NOT_FOUND = 127
+STATUS_SUCCESS = 0
+STATUS_ERROR_INVALID_FUNCTION = 1
+STATUS_ERROR_PROC_NOT_FOUND = 127
 
 
 def shell(cmd, env=None):
@@ -36,7 +37,7 @@ def find_tool(tool):
         print(x)
 
     is_found = True
-    if returncode == ERROR_PROC_NOT_FOUND or returncode == ERROR_INVALID_FUNCTION:
+    if returncode == STATUS_ERROR_PROC_NOT_FOUND or returncode == STATUS_ERROR_INVALID_FUNCTION:
         is_found = False
 
     return is_found, paths

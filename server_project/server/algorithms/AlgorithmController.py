@@ -5,6 +5,7 @@ from build_bot_project.build_bot import BuildBot
 from build_bot_project.languages.cpp_language import CPPLanguage
 from build_bot_project.languages.cs_language import CSLanguage
 from build_bot_project.languages.fp_language import FPLanguage
+from common.cmd_utils import STATUS_SUCCESS
 from test_bot_project.test_bot import TestBot
 
 
@@ -18,17 +19,99 @@ class AlgorithmController(IAlgorithmController):
 
     def remove_algorithm(self, name):
         current_algorithm = Algorithm.objects.filter(name=name).get()
+        # TODO: add full delete: remove status and test data
+        # current_algorithm.status_id.delete()
+        # current_algorithm.test_data_id.delete()
         current_algorithm.delete()
 
     def get_algorithm(self, name):
+        # Algorithm.objects.filter(name=name).first()
         return Algorithm.objects.filter(name=name).get()
 
-    def update_algorithm(self, algorithm):
-        pass
-
     def add_algorithm(self, algorithm):
-        algorithm.save()
+        try:
+            algorithm.save()
+            (ret_code, out, err) = self._build_algorithm(algorithm)
+        except WindowsError:
+            self.remove_algorithm(algorithm.name)
+            raise
 
+        if ret_code != STATUS_SUCCESS:
+            self.remove_algorithm(algorithm.name)
+
+        return ret_code, out, err
+
+    def run_algorithm(self, name):
+        algorithm = self.get_algorithm(name)
+        exe_path = self._get_exe_path(algorithm)
+        return self.test_bot.run(file=exe_path,
+                                 run_string=algorithm.testdata_id.run_options)
+
+    def search_algorithm(self, name):
+        return Algorithm.objects.get(name__iregex=r'\y{0}\y'.format(name)).get()
+
+    def get_algorithms_list(self):
+        return Algorithm.objects.all()
+
+    def get_algorithm_names_list(self):
+        alg_obj_list = self.get_algorithms_list()
+        result = []
+        for item in alg_obj_list:
+            result.append(item.name)
+        return result
+
+    def update_algorithm(self,
+                         old_algorithm,
+                         name,
+                         description,
+                         source_code,
+                         build_options,
+                         testdata_id,
+                         price,
+                         language):
+        algorithm = self.get_algorithm(name)
+
+        algorithm.user_id = old_algorithm.user_id
+        algorithm.status_id = old_algorithm.status_id
+
+        algorithm.name = name
+        algorithm.description = description
+        algorithm.source_code = source_code
+        algorithm.build_options = build_options
+        algorithm.testdata_id = testdata_id
+        algorithm.price = price
+        algorithm.language = language
+
+        (ret_code, out, err) = self._build_algorithm(algorithm)
+        if ret_code == STATUS_SUCCESS:
+            algorithm.save()
+
+    @staticmethod
+    def create_algorithm(name,
+                         description,
+                         source_code,
+                         build_options,
+                         testdata_id,
+                         price,
+                         user_id,
+                         status_id,
+                         language):
+        return Algorithm.objects.create(name=name,
+                                        description=description,
+                                        source_code=source_code,
+                                        build_options=build_options,
+                                        testdata_id=testdata_id,
+                                        price=price, user_id=user_id,
+                                        status_id=status_id,
+                                        language=language)
+
+    def _get_algorithm_dir(self, algorithm):
+        return self.work_dir + os.sep + str(algorithm.user_id.user_id) + os.sep + str(algorithm.algorithm_id)
+
+    def _get_exe_path(self, algorithm):
+        return self._get_algorithm_dir(algorithm) + os.sep + algorithm.name + ".exe"
+
+    def _build_algorithm(self, algorithm):
         language = None
         if algorithm.language == "cpp":
             language = CPPLanguage(self.config_parser)
@@ -47,27 +130,10 @@ class AlgorithmController(IAlgorithmController):
             src_file.write(algorithm.source_code)
 
         exe_path = self._get_exe_path(algorithm)
-        (ret_code, out, err) = self.build_bot.build(source_file, str(exe_path))
 
-        if ret_code != 0:
-            self.remove_algorithm(algorithm.name)
+        return self.build_bot.build(source_file, str(exe_path))
 
-        return ret_code, out, err
 
-    def run_algorithm(self, name):
-        algorithm = self.get_algorithm(name)
-        exe_path = self._get_exe_path(algorithm)
-        return self.test_bot.run(file=exe_path,
-                                 run_string=algorithm.testdata_id.run_options)
 
-    def search_algorithm(self, name):
-        return Algorithm.objects.get(name__iregex=r'\y{0}\y'.format(name)).get()
 
-    def get_algorithms_list(self):
-        return Algorithm.objects.get()
 
-    def _get_algorithm_dir(self, algorithm):
-        return self.work_dir + os.sep + str(algorithm.user_id.user_id) + os.sep + str(algorithm.algorithm_id)
-
-    def _get_exe_path(self, algorithm):
-        return self._get_algorithm_dir(algorithm) + os.sep + algorithm.name + ".exe"

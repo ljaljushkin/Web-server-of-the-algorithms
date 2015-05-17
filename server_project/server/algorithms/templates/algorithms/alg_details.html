@@ -9,14 +9,19 @@
 <h1>Algorithm</h1>
 <hr>
 <center>
+    <form name="form" id="form" action="{% url 'run_existing_algo' %}" method="post">
+    {% csrf_token %}
     <p>Name: {{ name }}</p>
     <p>Description: {{ description }}</p>
+    <p>Language: {{ language }}</p>
     <p>Code: {{ source_code }}</p>
     <p>Build string {{ build_options }} </p><br>
     <p>Run string {{ run_options }} </p><br>
-    <p>Test data </p><br>
-    <p>Price</p><br>
-    <p>Tags</p><br>
+    <p>Test data {{ test_data }} </p><br>
+    <p>Price {{ price }} </p><br>
+    <p>Tags {{ tags }} </p><br>
+    <input type="submit">
+    </form>
 </center>
 </body>
 </html>
