@@ -36,7 +36,7 @@ class EnumField(models.Field):
 
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
-    login = models.CharField(max_length=45)
+    login = models.CharField(unique=True,max_length=45)
     password = models.CharField(max_length=45)
     email = models.CharField(max_length=100)
     account_cash = models.IntegerField()

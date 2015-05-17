@@ -2,9 +2,7 @@ import sys
 
 from algorithms import IAlgorithmController
 from algorithms.AlgorithmController import AlgorithmController
-from build_bot_project.build_bot import BuildBot
-from common.cmd_utils import shell, split_lines
-from build_bot_project.languages.cpp_language import CPPLanguage
+from common.cmd_utils import split_lines
 
 
 if sys.version_info > (3, 0):
@@ -13,10 +11,11 @@ else:
     import ConfigParser
 
 import os
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
 from algorithms.models import Algorithm, TestData, User, Status
+
 
 algorithm_controller = IAlgorithmController
 config_parser = None
@@ -36,6 +35,10 @@ def init():
 
 
 def index(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+
     alg_obj_list = Algorithm.objects.all()
     algs_list = []
 
@@ -44,10 +47,14 @@ def index(request):
 
     return render(request,
                   "algorithms/index.html",
-                  {"algs_list": algs_list})
+                  {"algs_list": algs_list,
+                   "login": login})
 
 
 def alg_details(request, alg_name):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
     algorithm = Algorithm.objects.filter(name=alg_name).first()
     return render(request,
                   "algorithms/alg_details.html",
@@ -55,26 +62,64 @@ def alg_details(request, alg_name):
                        description=algorithm.description,
                        source_code=algorithm.source_code,
                        build_options=algorithm.build_options,
-                       run_options=algorithm.testdata_id.run_options))
+                       run_options=algorithm.testdata_id.run_options,
+                       login=login))
 
 
 def add_algorithm(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+
     return render(request,
                   "algorithms/add_algorithm.html",
+                  {"login": login})
+
+
+def login(request):
+    if "login" in request.POST.keys() \
+            and "password" in request.POST.keys():
+        user = User.objects.filter(login=request.POST["login"], password=request.POST["password"]).get()
+        if user is not None:
+            request.session["login"] = user.login
+            return HttpResponseRedirect('/algorithms/')
+        else:
+            return HttpResponseRedirect('/algorithms/login/')
+
+
+def logout(request):
+    try:
+        del request.session['login']
+    except KeyError:
+        pass
+    return HttpResponseRedirect('/algorithms/')
+
+
+def register(request):
+    if "login" in request.POST.keys() \
+            and "email" in request.POST.keys() \
+            and "password" in request.POST.keys():
+        print (request.POST["login"])
+        user = User.objects.create(login=request.POST["login"],
+                                   email=request.POST["email"],
+                                   password=request.POST["password"],
+                                   account_cash=0)
+        user.save()
+    return render(request,
+                  "algorithms/register.html",
         {})
 
 
 def submit_algorithm(request):
+    if not "login" in request.session:
+        return HttpResponseRedirect('/algorithms/login/')
+
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
                                         run_options=request.POST["run_string"])
     test_data.save()
 
-    user = User.objects.create(login="tanya",
-                               password="zenit champion",
-                               email="fedor",
-                               account_cash=666)
-    user.save()
+    user = User.objects.filter(login=request.session["login"]).get()
 
     status = Status.objects.create(name="tanya_OK")
     status.save()
