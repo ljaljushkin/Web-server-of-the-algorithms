@@ -9,7 +9,7 @@
 <h1>Algorithm</h1>
 <hr>
 <center>
-    <form name="form" id="form" action="{% url 'run_existing_algo' %}" method="post">
+    <form name="form" id="form" action="{% url 'run_existing_algo' name %}" method="post">
     {% csrf_token %}
     <p>Name: {{ name }}</p>
     <p>Description: {{ description }}</p>

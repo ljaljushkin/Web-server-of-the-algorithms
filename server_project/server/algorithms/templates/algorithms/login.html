@@ -11,16 +11,16 @@
 <body>
 	<center>
     {% if not login %}
-        <h1>LOGIN YOPTA</h1>
+        <h1>LOGIN </h1>
         <form name="form" id="form" action="{% url 'login' %}" method="post">
         {% csrf_token %}
-        <p>LOGIN YOPTA</p><input name="login" id="login" type="text" width="400px"><br>
-        <p>PASSWORD YOPTA</p><input name="password" id="password" type="password" width="400px"><br>
-        <p>ZABYL YOPTA</p>
+        <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
+        <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
+        <p>ZABYL </p>
         <input type="submit">
         </form>
     {% else %}
-        <p> You were logged in as {{ login }} YOPTA</p>
+        <p> You were logged in as {{ login }} </p>
         <form name="form" id="form" action="{% url 'logout' %}" method="post">
         {% csrf_token %}
         <p>LOGOUT</p><input type="submit">

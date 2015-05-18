@@ -61,7 +61,6 @@ class AlgorithmController(IAlgorithmController):
         return result
 
     def update_algorithm(self,
-                         old_algorithm,
                          name,
                          description,
                          source_code,
@@ -69,6 +68,7 @@ class AlgorithmController(IAlgorithmController):
                          testdata_id,
                          price,
                          language):
+        old_algorithm = self.get_algorithm(name)
         algorithm = self.get_algorithm(name)
 
         algorithm.user_id = old_algorithm.user_id
@@ -80,7 +80,7 @@ class AlgorithmController(IAlgorithmController):
         algorithm.build_options = build_options
         algorithm.testdata_id = testdata_id
         algorithm.price = price
-        algorithm.language = language
+        algorithm.language = old_algorithm.language
 
         (ret_code, out, err) = self._build_algorithm(algorithm)
         if ret_code == STATUS_SUCCESS:
@@ -123,7 +123,9 @@ class AlgorithmController(IAlgorithmController):
         self.build_bot.set_language(language)
 
         algorithm_dir = self._get_algorithm_dir(algorithm)
-        os.makedirs(algorithm_dir)
+        if not os.path.exists(algorithm_dir):
+            os.makedirs(algorithm_dir)
+
         source_file = algorithm_dir + os.sep + algorithm.name + "." + algorithm.language
 
         with open(source_file, "wb") as src_file:
