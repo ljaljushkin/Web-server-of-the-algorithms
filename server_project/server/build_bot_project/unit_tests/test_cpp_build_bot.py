@@ -15,7 +15,7 @@ test_name = __name__
 @pytest.mark.usefixtures("test_build_directory_fixture", "test_config_fixture")
 class CppBuildBotTests(unittest.TestCase):
     def setUp(self):
-        self.test_file_name = "basic"
+        self.test_file_name = "cpp_basic"
         self.test_src_name = self.test_file_name + ".cpp"
         self.test_exe_name = self.test_file_name + ".exe"
 
