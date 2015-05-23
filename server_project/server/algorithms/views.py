@@ -67,6 +67,8 @@ def add_algorithm(request):
     login = []
     if "login" in request.session.keys():
         login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
 
     language_list = ["c++", "c#", "pascal"]
 
@@ -77,12 +79,19 @@ def add_algorithm(request):
 
 
 def update_algorithm_page(request, alg_name):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
+
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
 
     return render(request,
                   "algorithms/update_algorithm.html",
-                  dict(name=algorithm.name,
+                  dict(login=login,
+                       name=algorithm.name,
                        description=algorithm.description,
                        language_list=["c++", "c#", "pascal"],
                        code=algorithm.source_code,
@@ -94,6 +103,12 @@ def update_algorithm_page(request, alg_name):
 
 
 def update_algorithm(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
+
     algorithm_controller = create_algorithm_controller()
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
@@ -126,13 +141,22 @@ def run_existing_algo(request, alg_name):
 def login(request):
     if "login" in request.POST.keys() \
             and "password" in request.POST.keys():
-        user = User.objects.filter(login=request.POST["login"], password=request.POST["password"]).get()
+
+        user = None
+
+        try :
+            user = User.objects.filter(login=request.POST["login"], password=request.POST["password"]).get()
+        except User.DoesNotExist :
+            user = None
+
         if user is not None:
             request.session["login"] = user.login
             return HttpResponseRedirect('/algorithms/')
         else:
-            return HttpResponseRedirect('/algorithms/login/')
-
+            return HttpResponseRedirect('/algorithms/register/')
+    return render(request,
+                  "algorithms/login.html",
+        {})
 
 def logout(request):
     try:
@@ -158,9 +182,6 @@ def register(request):
 
 
 def submit_algorithm(request):
-    if not "login" in request.session:
-        return HttpResponseRedirect('/algorithms/login/')
-
     algorithm_controller = create_algorithm_controller()
 
     test_data = TestData.objects.create(input_data=request.POST["test_data"],

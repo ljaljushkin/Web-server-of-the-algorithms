@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
+    <style> ul { padding: 0; margin-left: 20px; margin-right: 20px; } </style>
     <meta charset="UTF-8">
     {% load staticfiles %}
 
     <script src="{% static 'algorithms/js/jquery-latest.min.js' %}"></script>
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
+    <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
+    {% include "algorithms/login_corner.html" %}
 </head>
 <body>
-    {% include "algorithms/login_corner.html" %}   
+    <h1>Main Page</h1>
+    <hr>
     {% csrf_token %}
     <input type="text" value="">
     <input type="button" value="Search"><br>
@@ -26,9 +30,9 @@
         {% csrf_token %}
         <input type="submit" name="add_algorithm" value="add_algorithm">
     </form>
-    <input type="button" value="update" onclick="updateAlgorithm()"/>
+    <input type="button" value="update" onclick="updateAlgorithm()"/><br>
     {% csrf_token %}
-    <textarea readonly id="description" name="description" style="width:100%; height:100%;resize:none;font-family: monaco, Consolas, 'Lucida Console', monospace; font-size: 11px; font-style: normal; background: white;"> </textarea>
+    <textarea readonly id="description" name="description" style="width:300px; height:200px;resize:none;font-family: monaco, Consolas, 'Lucida Console', monospace; font-size: 11px; font-style: normal; background: white;"> </textarea>
 </body>
 
 <script>

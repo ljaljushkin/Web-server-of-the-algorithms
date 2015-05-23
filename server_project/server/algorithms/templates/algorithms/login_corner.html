@@ -1,22 +1,21 @@
-	<center>
-
+<div align="right">
     {% if not login %}
-        <form name="form" id="form" action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
-        <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
-        <p>ZABYL </p>
-        <input type="submit" value="LOGIN!!!!!!!!!!!!!!!!!!!!!">
+        <form name="login_form" id="login_form" action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <p>LOGIN <input name="login" id="login" type="text" width="400px"></p>
+            <p>PASSWORD <input name="password" id="password" type="password" width="400px"></p>
+            <p><a href="{% url 'index' %}">ZABYL</a></p>
+            <input type="submit" value="LOGIN!!!!!!!!!!!!!!!!!!!!!">
         </form>
-        <form name="register" id="register" action="{% url 'register' %}" method="post" >
-        {% csrf_token %}
+        <form name="register_form" id="register_form" action="{% url 'register' %}" method="post" >
+            {% csrf_token %}
             <input type="submit" name="register" value="REGISTER!!!!">
         </form>
     {% else %}
         <p> You were logged in as {{ login }} </p>
-        <form name="form" id="form" action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <input type="submit" value="LOGOUT!!!!!!!">
+        <form name="logout_form" id="logout_form" action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="LOGOUT!!!!!!!">
         </form>
     {% endif %}   
-	</center>
+</div>

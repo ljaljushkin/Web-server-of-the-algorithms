@@ -7,17 +7,22 @@
     <script src="{% static 'algorithms/js/jquery-latest.min.js' %}"></script>
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
+    <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
 </head>
 <body>
 	<center>
     {% if not login %}
         <h1>LOGIN </h1>
         <form name="form" id="form" action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
-        <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
-        <p>ZABYL </p>
-        <input type="submit">
+            {% csrf_token %}
+            <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
+            <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
+            <p><a href="{% url 'index' %}">ZABYL</a></p>
+            <input type="submit" value="LOGIN!!!">
+        </form>
+        <form name="register_form" id="register_form" action="{% url 'register' %}" method="post" >
+            {% csrf_token %}
+            <input type="submit" name="register" value="REGISTER!!!!">
         </form>
     {% else %}
         <p> You were logged in as {{ login }} </p>
