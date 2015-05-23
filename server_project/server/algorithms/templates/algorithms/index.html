@@ -33,6 +33,10 @@
     <input type="button" value="update" onclick="updateAlgorithm()"/><br>
     {% csrf_token %}
     <textarea readonly id="description" name="description" style="width:300px; height:200px;resize:none;font-family: monaco, Consolas, 'Lucida Console', monospace; font-size: 11px; font-style: normal; background: white;"> </textarea>
+
+    {% for tag in tags_list %}
+        <a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}">{{ tag }}</a>
+    {% endfor %}
 </body>
 
 <script>
@@ -80,13 +84,11 @@ function getDescription(){
 function redirect() {
     var algSelect = $("#lstBox1 option:selected").text();
 
-    var currUrl = window.location.href;
-
-    var newUrl = "";
-
-    newUrl = currUrl + algSelect;
+    var newUrl = "{{ object.get_absolute_url }}" + "/algorithms/" + algSelect;
     newUrl = newUrl.replace(/\s/g, '');
+    
     window.location.replace(newUrl);
+    
 }
 
 
