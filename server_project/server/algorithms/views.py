@@ -3,12 +3,14 @@ import os
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 from algorithms import IAlgorithmController
+from algorithms import IPayController
 from algorithms.AlgorithmController import AlgorithmController
-from algorithms.models import User, TestData, Status
-from common.cmd_utils import split_lines
+from algorithms.FakePayController import FakePayController
+from algorithms.models import User, TestData, Status, BoughtAlgorithm
 
 algorithm_controller = IAlgorithmController
 config_parser = None
+pay_controller = IPayController
 
 
 def create_algorithm_controller():
@@ -49,6 +51,16 @@ def alg_details(request, alg_name):
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
     # TODO: tags
+    is_bought = False
+
+    if login != []:
+        try:
+            user = User.objects.filter(login=login).get()
+            bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
+            is_bought = True
+        except BoughtAlgorithm.DoesNotExist:
+            is_bought = False
+
     return render(request,
                   "algorithms/alg_details.html",
                   dict(name=algorithm.name,
@@ -60,7 +72,8 @@ def alg_details(request, alg_name):
                        test_data=algorithm.testdata_id.input_data,
                        price=algorithm.price,
                        tags="TBD",
-                       login=login))
+                       login=login,
+                       is_bought=is_bought))
 
 
 def add_algorithm(request):
@@ -76,6 +89,33 @@ def add_algorithm(request):
                   "algorithms/add_algorithm.html",
                   dict(login=login,
                        language_list=language_list))
+
+
+def buy_algorithm(request, alg_name):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
+
+    algorithm_controller = create_algorithm_controller()
+    algorithm = algorithm_controller.get_algorithm(alg_name)
+
+    try:
+        user = User.objects.filter(login=login).get()
+        bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
+        return HttpResponse("Already bought!")
+    except BoughtAlgorithm.DoesNotExist:
+        pay_controller = FakePayController()
+        if pay_controller.send_money(algorithm.price, login, algorithm.user_id.login):
+            user = User.objects.filter(login=login).get()
+            bought_alg = BoughtAlgorithm.objects.create(user_id=user, algorithm_id=algorithm)
+
+            bought_alg.save()
+
+            return HttpResponseRedirect("/algorithms/" + alg_name)
+        else:
+            return HttpResponse("Not enough money!")
 
 
 def update_algorithm_page(request, alg_name):
@@ -98,8 +138,7 @@ def update_algorithm_page(request, alg_name):
                        build_string=algorithm.build_options,
                        run_string=algorithm.testdata_id.run_options,
                        test_data=algorithm.testdata_id.input_data,
-                       price=algorithm.price,
-                       tags=algorithm.tag))
+                       price=algorithm.price))
 
 
 def update_algorithm(request):
@@ -144,9 +183,9 @@ def login(request):
 
         user = None
 
-        try :
+        try:
             user = User.objects.filter(login=request.POST["login"], password=request.POST["password"]).get()
-        except User.DoesNotExist :
+        except User.DoesNotExist:
             user = None
 
         if user is not None:
@@ -157,6 +196,7 @@ def login(request):
     return render(request,
                   "algorithms/login.html",
         {})
+
 
 def logout(request):
     try:
@@ -202,7 +242,8 @@ def submit_algorithm(request):
                                                      price=request.POST["price"],
                                                      user_id=user,
                                                      status_id=status,
-                                                     language="cpp")
+                                                     language="cpp",
+                                                     tags=request.POST["tags"].strip().split(","))
 
     (ret_code, out, err) = algorithm_controller.add_algorithm(new_algo)
 

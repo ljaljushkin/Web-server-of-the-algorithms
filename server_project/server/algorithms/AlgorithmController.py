@@ -1,6 +1,6 @@
 import os
 from algorithms.IAlgorithmController import IAlgorithmController
-from algorithms.models import Algorithm
+from algorithms.models import Algorithm, Tag, TagList
 from build_bot_project.build_bot import BuildBot
 from build_bot_project.languages.cpp_language import CPPLanguage
 from build_bot_project.languages.cs_language import CSLanguage
@@ -30,7 +30,6 @@ class AlgorithmController(IAlgorithmController):
 
     def add_algorithm(self, algorithm):
         try:
-            algorithm.save()
             (ret_code, out, err) = self._build_algorithm(algorithm)
         except WindowsError:
             self.remove_algorithm(algorithm.name)
@@ -95,15 +94,34 @@ class AlgorithmController(IAlgorithmController):
                          price,
                          user_id,
                          status_id,
-                         language):
-        return Algorithm.objects.create(name=name,
-                                        description=description,
-                                        source_code=source_code,
-                                        build_options=build_options,
-                                        testdata_id=testdata_id,
-                                        price=price, user_id=user_id,
-                                        status_id=status_id,
-                                        language=language)
+                         language,
+                         tags):
+
+        algorithm = Algorithm.objects.create(name=name,
+                                             description=description,
+                                             source_code=source_code,
+                                             build_options=build_options,
+                                             testdata_id=testdata_id,
+                                             price=price, user_id=user_id,
+                                             status_id=status_id,
+                                             language=language)
+
+        algorithm.save()
+
+        for tag in tags:
+            db_tag = ""
+
+            try:
+                db_tag = Tag.objects.filter(tag_name=tag).get()
+            except Tag.DoesNotExist:
+                db_tag = Tag.objects.create(tag_name=tag)
+                db_tag.save()
+
+            algorithm_tag = TagList.objects.create(tag_id=db_tag,
+                                                   algorithm_id=algorithm)
+            algorithm_tag.save()
+
+        return algorithm
 
     def _get_algorithm_dir(self, algorithm):
         return self.work_dir + os.sep + str(algorithm.user_id.user_id) + os.sep + str(algorithm.algorithm_id)

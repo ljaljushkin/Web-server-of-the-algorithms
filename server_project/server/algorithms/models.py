@@ -12,30 +12,9 @@ from __future__ import unicode_literals
 from django.db import models
 
 
-# class EnumField(models.Field):
-# def __init__(self, *args, **kwargs):
-#         super(EnumField, self).__init__(*args, **kwargs)
-#         assert self.choices, "Need choices for enumerator"
-#
-#     def db_type(self, connection):
-#         if not all(isinstance(col, basestring) for col, _ in self.choices):
-#             raise ValueError("MySQL ENUM values should be strings")
-#
-#         return "ENUM({})".format(",".join("'{}'".format(col) for col, _ in self.choices))
-#
-#
-# class Language(EnumField, models.CharField):
-#     def __init__(self, *args, **kwargs):
-#         languages = [('cpp', 'C++'),
-#                      ("pascal", "Pascal"),
-#                      ("cs", "C#")]
-#         kwargs.setdefault('choices', languages)
-#         super(Language, self).__init__(*args, **kwargs)
-
-
 class User(models.Model):
     user_id = models.AutoField(primary_key=True)
-    login = models.CharField(unique=True,max_length=45)
+    login = models.CharField(unique=True, max_length=45)
     password = models.CharField(max_length=45)
     email = models.CharField(max_length=100)
     account_cash = models.IntegerField()
@@ -76,10 +55,6 @@ class Algorithm(models.Model):
     testdata_id = models.ForeignKey(TestData, db_column='testdata_id')
     price = models.IntegerField()
     language = models.CharField(unique=False, max_length=100)
-    tag = models.CharField(unique=False, max_length=100)
-    # TODO:
-    # language = Language(max_length=20)
-    # tag = models.ForeignKey(Tag, db_column='tag_id')
 
     class Meta:
         managed = True
@@ -87,8 +62,8 @@ class Algorithm(models.Model):
 
 
 class Tag(models.Model):
-    tag_id = models.IntegerField(primary_key=True)
-    tag_name = models.CharField(max_length=45)
+    tag_id = models.AutoField(primary_key=True)
+    tag_name = models.CharField(unique=True, max_length=45)
 
     class Meta:
         managed = True
@@ -96,10 +71,20 @@ class Tag(models.Model):
 
 
 class TagList(models.Model):
-    taglist_id = models.IntegerField(primary_key=True)
+    taglist_id = models.AutoField(primary_key=True)
     algorithm_id = models.ForeignKey('Algorithm', db_column='algorithm_id')
     tag_id = models.ForeignKey('Tag', db_column='tag_id')
 
     class Meta:
         managed = True
         db_table = 'tag_list'
+
+
+class BoughtAlgorithm(models.Model):
+    boughtalgs_id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey('User', db_column='user_id')
+    algorithm_id = models.ForeignKey('Algorithm', db_column='algorithm_id')
+
+    class Meta:
+        managed = True
+        db_table = 'bought_algorithms'
