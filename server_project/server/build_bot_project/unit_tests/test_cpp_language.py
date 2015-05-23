@@ -14,7 +14,7 @@ test_name = __name__
 class CPPLanguageTests(unittest.TestCase):
     def setUp(self):
         self.cpp_language_without_config = CPPLanguage()
-        self.test_file_name = "basic"
+        self.test_file_name = "cpp_basic"
         self.test_src_name = self.test_file_name + ".cpp"
         self.test_exe_name = self.test_file_name + ".exe"
 
