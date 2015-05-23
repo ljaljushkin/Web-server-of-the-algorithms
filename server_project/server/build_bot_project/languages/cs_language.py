@@ -25,6 +25,6 @@ class CSLanguage(ILanguage):
     def get_build_command(self, code_path, exe_path):
         compile_cmd = screen_str(self.compiler_path) \
                       + " /debug+" \
-                      + "/out:" + exe_path \
-                      + code_path
+                      + " /out:" + exe_path \
+                      + " " + code_path
         return compile_cmd
