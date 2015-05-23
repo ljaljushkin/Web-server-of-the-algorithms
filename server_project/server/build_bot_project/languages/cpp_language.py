@@ -17,7 +17,7 @@ class CPPLanguage(ILanguage):
         ILanguage.__init__(self)
         self.compiler_dir = self.DEFAULT_COMPILER_DIR
         if config_parser:
-            compiler_dir = config_parser.get('compiler_paths', 'cpp_path')
+            compiler_dir = config_parser.get('compiler_paths', 'cpp_path_Fedya')
             if compiler_dir:
                 self.compiler_dir = compiler_dir
         self.compiler_path = os.path.join(self.compiler_dir, self.COMPILER_FILE)
