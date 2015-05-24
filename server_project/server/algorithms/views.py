@@ -8,9 +8,6 @@ from algorithms.AlgorithmController import AlgorithmController
 from algorithms.FakePayController import FakePayController
 
 from algorithms.models import User, TestData, Status, BoughtAlgorithm, Tag, TagList
-from build_bot_project.languages.cpp_language import CPPLanguage
-from build_bot_project.languages.cs_language import CSLanguage
-from build_bot_project.languages.fp_language import FPLanguage
 from common.cmd_utils import STATUS_SUCCESS
 
 algorithm_controller = IAlgorithmController
@@ -18,11 +15,22 @@ config_parser = None
 pay_controller = IPayController
 
 
+def validate_config_parser(config_parser):
+    config_parser.get("general", "work_dir")
+    config_parser.get("compiler_paths", "cpp_path")
+    config_parser.get("compiler_paths", "cs_path")
+    config_parser.get("compiler_paths", "fp_path")
+    return True
+
+
 def create_algorithm_controller():
     config_parser = ConfigParser.ConfigParser()
     project_path = os.path.dirname(os.path.dirname(__file__))
     is_config_read_ok = config_parser.read(os.path.join(project_path, "config.cfg"))
     assert is_config_read_ok
+
+    is_config_check_ok = validate_config_parser(config_parser)
+    assert is_config_check_ok
 
     algorithm_controller = AlgorithmController(config_parser)
     return algorithm_controller
@@ -182,7 +190,7 @@ def update_algorithm_page(request, alg_name):
                   dict(login=login,
                        name=algorithm.name,
                        description=algorithm.description,
-                       language_list=["c++", "c#", "pascal"],
+                       language_list=algorithm_controller.get_languages_list(),
                        code=algorithm.source_code,
                        build_string=algorithm.build_options,
                        run_string=algorithm.testdata_id.run_options,
@@ -204,18 +212,29 @@ def update_algorithm(request):
                                         run_options=request.POST["run_string"])
     test_data.save()
 
-    ret_code = algorithm_controller.update_algorithm(name=request.POST["name"],
-                                                     description=request.POST["description"],
-                                                     source_code=request.POST["code"],
-                                                     build_options=request.POST["build_string"],
-                                                     testdata_id=test_data,
-                                                     price=request.POST["price"],
-                                                     language=request.POST["language"],
-                                                     tags=request.POST["tags"].strip().split(","))
+    (ret_code, out, err) = algorithm_controller.update_algorithm(name=request.POST["name"],
+                                                                 description=request.POST["description"],
+                                                                 source_code=request.POST["code"],
+                                                                 build_options=request.POST["build_string"],
+                                                                 testdata_id=test_data,
+                                                                 price=request.POST["price"],
+                                                                 language=request.POST["language"],
+                                                                 tags=request.POST["tags"].strip().split(","))
 
-    status = ["failed to update", "successfully updated"][ret_code == STATUS_SUCCESS]
+    if ret_code == STATUS_SUCCESS:
+        out_all = "Algorithm was successfully updated! "
+    else:
+        out_all = "Failed to update algorithm! <br> ret_code = " + str(ret_code)
 
-    return HttpResponse(status)
+    out_all += "<br><br> OUTPUT STREAM FROM BUILD---> "
+    for line in out.splitlines():
+        out_all += line.strip().decode('utf-8') + "<br>"
+
+    out_all += "<br><br> ERROR STREAM FROM BUILD---> "
+    for line in err.splitlines():
+        out_all += line.strip().decode('utf-8') + "<br>"
+
+    return HttpResponse(out_all)
 
 
 def run_existing_algo(request, alg_name):

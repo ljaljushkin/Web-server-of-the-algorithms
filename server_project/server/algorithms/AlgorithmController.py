@@ -123,7 +123,7 @@ class AlgorithmController(IAlgorithmController):
         (ret_code, out, err) = self._build_algorithm(algorithm)
         if ret_code == STATUS_SUCCESS:
             algorithm.save()
-        return ret_code
+        return ret_code, out, err
 
     @staticmethod
     def get_languages_list():
