@@ -7,8 +7,9 @@ from algorithms import IPayController
 from algorithms.AlgorithmController import AlgorithmController
 from algorithms.FakePayController import FakePayController
 
-from algorithms.models import User, TestData, Status, BoughtAlgorithm, Tag, TagList
+from algorithms.models import User, TestData, Status, BoughtAlgorithm, Tag, TagList, Algorithm
 from common.cmd_utils import STATUS_SUCCESS
+import operator
 
 algorithm_controller = IAlgorithmController
 config_parser = None
@@ -16,8 +17,8 @@ pay_controller = IPayController
 
 
 def validate_config_parser(config_parser):
-    config_parser.get("general", "work_dir_Fedya1")
-    config_parser.get("compiler_paths", "cpp_path_Fedya1")
+    config_parser.get("general", "work_dir_Tanya")
+    config_parser.get("compiler_paths", "cpp_path_Tanya")
     #config_parser.get("compiler_paths", "cs_path")
     #config_parser.get("compiler_paths", "fp_path")
     return True
@@ -42,6 +43,51 @@ def alg_description(request, alg_name):
     algorithm = algorithm_controller.get_algorithm(alg_name)
     return HttpResponse(algorithm.description)
     
+
+def statistics(request) :
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+
+    bought_algs_list = BoughtAlgorithm.objects.all()
+    submitted_algorithms = Algorithm.objects.all()
+
+    submissions = []
+    downloads = []
+    purchases = []
+    algorithms_rating_dic = {}
+
+    for item in submitted_algorithms :
+        login = item.user_id.login
+        alg_name = item.name
+
+        submissions.append([login, alg_name])
+
+    for item in bought_algs_list :
+        alg_name = item.algorithm_id.name
+        alg_price = item.algorithm_id.price
+        login = item.algorithm_id.user_id.login
+
+        if alg_price != 0 :
+            purchases.append([login, alg_name, alg_price])
+
+        downloads.append([login, alg_name])
+
+        if not alg_name in algorithms_rating_dic.keys() :
+            algorithms_rating_dic[alg_name] = 1
+        else :    
+            algorithms_rating_dic[alg_name] += 1
+
+    rating = sorted(algorithms_rating_dic.items(), key=operator.itemgetter(1), reverse=True)
+
+    return render(request,
+                  "algorithms/statistic.html",
+                  {"submissions":submissions,
+                   "downloads":downloads,
+                   "purchases":purchases,
+                   "rating":rating,
+                   "login": login})
+
 def refill(request):
     login = []
     if "login" in request.session.keys():

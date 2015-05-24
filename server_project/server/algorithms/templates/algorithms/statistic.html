@@ -1,0 +1,79 @@
+{% load staticfiles %}
+<head lang="en">
+    <!-- HEAD -->
+    <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+            <!-- HOME -->
+            <!-- HEADER -->
+            <!-- LOGIN CORNER -->
+            <td>{% include "algorithms/home.html" %}</td>
+            <td><h1>Statistics</h1></td>
+            <td>{% include "algorithms/login_corner.html" %}</td>
+        </tr>
+        </tbody>
+    </table>
+    
+</head>
+<hr>
+<body>
+
+    <!-- BODY -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+        
+            <!-- USER TAB -->
+            <td>
+                {% include "algorithms/user_tab.html" %}  
+            </td>
+            
+            <!-- BODY #1 -->
+            <td>
+                <h2>Submissions statistics</h2><br><br>
+                <b>Submitted algorithms: </b><br>
+                <table border="1">
+                    <tr><td>User</td><td>Algorithm</td></tr>
+                    {% for item in submissions %}
+                        <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td></tr>
+                    {% endfor %}
+                </table>
+
+                <h2>Algorithms rating</h2><br><br>
+                <table border="1">
+                    <tr><td>Algorithm</td><td>Downloads</td></tr>
+                    {% for item in rating %}
+                        <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td></tr>
+                    {% endfor %}
+                </table>
+            </td>
+            
+            <!-- BODY #2 -->
+            <td>
+                <h2>Downloads statistics</h2><br><br>
+                <b>Downloaded algorithms (free and paid): </b><br>
+                <table border="1">
+                    <tr><td>User</td><td>Algorithm</td></tr>
+                    {% for item in downloads %}
+                        <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td></tr>
+                    {% endfor %}
+                </table>
+                <br> <br>
+                <h2>Purchase statistics</h2><br><br>
+                <b>Bought algorithms: </b><br>
+                <table border="1">
+                    <tr><td>User</td><td>Algorithm</td><td>Price</td></tr>
+                    {% for item in purchases %}
+                        <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td><td>{{ item.2 }}</td></tr>
+                    {% endfor %}
+                </table>
+            </td>
+            
+        </tr>
+        </tbody>
+    </table>
+
+</body>

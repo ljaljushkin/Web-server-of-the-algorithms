@@ -7,6 +7,7 @@
 
     <script src="{% static 'algorithms/js/jquery-latest.min.js' %}"></script>
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
+    <script src="{% static 'algorithms/js/tagcloud.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
     
@@ -37,9 +38,13 @@
             <!-- USER TAB + TAGS-->
             <td>
                 {% include "algorithms/user_tab.html" with account_cash="TBD" %}  
-                {% for tag in tags_list %}
-                    <a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}">{{ tag }}</a>
-                {% endfor %}
+                <canvas width="300" height="450" id="myCanvas">
+                    <ul class="weighted" style="font-size: 50%" id="weightTags">
+                        {% for tag in tags_list %}
+                            <li><a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}" data-weight="{{tag}}">{{ tag }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </canvas>
             </td>
             
             <!-- BODY #1 -->
@@ -94,6 +99,39 @@ $.ajaxSetup({
              xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
          }
      } 
+});
+
+jQuery(function ($) {
+    var gradient = {
+        17: '#f00', // red
+        0.33: '#ff0', // yellow
+        0.5: 'orange', // orange
+        0.66: '#0f0', // green
+        1: '#00f' // blue
+    };
+    $('#myCanvas').tagcanvas({
+        weightGradient: gradient,
+        weight: true,
+        weightFrom: 'data-weight',
+        shadow: '#ccf',
+        shadowBlur: 3,
+        interval: 20,
+        textFont: 'Impact,Arial Black,sans-serif',
+        textColour: '#82797B',
+        textHeight: 20,
+        outlineColour: '#F2F0F0',
+        outlineThickness: 5,
+        maxSpeed: 0.01,
+        minBrightness: 0.1,
+        depth: 0.92,
+        pulsateTo: 0.2,
+        pulsateTime: 0.75,
+        initial: [0.1, -0.1],
+        decel: 0.98,
+        reverse: true,
+        hideTags: false
+    }, 'weightTags');
+
 });
 
 function getDescription(){
