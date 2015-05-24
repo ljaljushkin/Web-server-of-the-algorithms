@@ -3,6 +3,7 @@ from build_bot_project.languages.ilanguage import ILanguage
 
 
 class FPLanguage(ILanguage):
+
     COMPILER_FILE = "fp_compiler.exe"
 
     DEFAULT_COMPILER_DIR = "/path/to/fp/compiler"
@@ -22,3 +23,11 @@ class FPLanguage(ILanguage):
 
     def get_build_command(self, code_path, exe_path):
         pass
+
+    @staticmethod
+    def get_extension(**kwargs):
+        return "pas"
+
+    @staticmethod
+    def get_name(**kwargs):
+        return "Free Pascal"

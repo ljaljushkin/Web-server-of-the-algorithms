@@ -39,6 +39,12 @@ class CPPLanguageTests(unittest.TestCase):
     def test_can_create_cpp_language_without_config(self):
         self.assertIsNotNone(self.cpp_language_without_config)
 
+    def test_cpp_language_name(self):
+        self.assertEqual(self.cpp_language_without_config.get_name(), "C++")
+
+    def test_cpp_language_extension(self):
+        self.assertEqual(self.cpp_language_without_config.get_extension(), "cpp")
+
     def test_can_get_default_cpp_compiler_path(self):
         self.assertEquals(self.cpp_language_without_config.get_compiler_path(), CPPLanguage.DEFAULT_COMPILER_PATH)
 

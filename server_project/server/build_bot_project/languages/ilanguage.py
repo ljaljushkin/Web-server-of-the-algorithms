@@ -12,3 +12,13 @@ class ILanguage:
     @abc.abstractmethod
     def get_build_command(self, code_path, exe_path):
         pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def get_name(**kwargs):
+        pass
+
+    @staticmethod
+    @abc.abstractmethod
+    def get_extension(**kwargs):
+        pass

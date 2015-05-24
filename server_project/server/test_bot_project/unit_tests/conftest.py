@@ -1,13 +1,6 @@
-import sys
-
-
-if sys.version_info > (3, 0):
-    import configparser
-else:
-    import ConfigParser
-
 import os
 import pytest
+
 
 @pytest.fixture(scope="class")
 def test_build_directory_fixture(request):

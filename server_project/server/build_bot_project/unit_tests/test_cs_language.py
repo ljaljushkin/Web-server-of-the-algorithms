@@ -36,6 +36,12 @@ class CSLanguageTests(unittest.TestCase):
     def test_can_create_cs_language_without_config(self):
         self.assertIsNotNone(self.cs_language_without_config)
 
+    def test_cs_language_name(self):
+        self.assertEqual(self.cs_language_without_config.get_name(), "C#")
+
+    def test_cs_language_extension(self):
+        self.assertEqual(self.cs_language_without_config.get_extension(), "cs")
+
     def test_can_get_default_cs_compiler_path(self):
         self.assertEquals(self.cs_language_without_config.get_compiler_path(), CSLanguage.DEFAULT_COMPILER_PATH)
 

@@ -28,3 +28,11 @@ class CSLanguage(ILanguage):
                       + " /out:" + exe_path \
                       + " " + code_path
         return compile_cmd
+
+    @staticmethod
+    def get_extension(**kwargs):
+        return "cs"
+
+    @staticmethod
+    def get_name(**kwargs):
+        return "C#"

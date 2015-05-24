@@ -8,6 +8,10 @@ from algorithms.AlgorithmController import AlgorithmController
 from algorithms.FakePayController import FakePayController
 
 from algorithms.models import User, TestData, Status, BoughtAlgorithm, Tag, TagList
+from build_bot_project.languages.cpp_language import CPPLanguage
+from build_bot_project.languages.cs_language import CSLanguage
+from build_bot_project.languages.fp_language import FPLanguage
+from common.cmd_utils import STATUS_SUCCESS
 
 algorithm_controller = IAlgorithmController
 config_parser = None
@@ -125,7 +129,7 @@ def add_algorithm(request):
     else:
         return HttpResponseRedirect('/algorithms/login/')
 
-    language_list = ["c++", "c#", "pascal"]
+    language_list = AlgorithmController.get_languages_list()
 
     return render(request,
                   "algorithms/add_algorithm.html",
@@ -200,15 +204,18 @@ def update_algorithm(request):
                                         run_options=request.POST["run_string"])
     test_data.save()
 
-    algorithm_controller.update_algorithm(name=request.POST["name"],
-                                          description=request.POST["description"],
-                                          source_code=request.POST["code"],
-                                          build_options=request.POST["build_string"],
-                                          testdata_id=test_data,
-                                          price=request.POST["price"],
-                                          language=request.POST["language"],
-                                          tags=request.POST["tags"].strip().split(","))
-    return HttpResponse("successfully updated")
+    ret_code = algorithm_controller.update_algorithm(name=request.POST["name"],
+                                                     description=request.POST["description"],
+                                                     source_code=request.POST["code"],
+                                                     build_options=request.POST["build_string"],
+                                                     testdata_id=test_data,
+                                                     price=request.POST["price"],
+                                                     language=request.POST["language"],
+                                                     tags=request.POST["tags"].strip().split(","))
+
+    status = ["failed to update", "successfully updated"][ret_code == STATUS_SUCCESS]
+
+    return HttpResponse(status)
 
 
 def run_existing_algo(request, alg_name):
@@ -289,27 +296,17 @@ def submit_algorithm(request):
                                                      price=request.POST["price"],
                                                      user_id=user,
                                                      status_id=status,
-                                                     language="cpp",
+                                                     language=request.POST["language"],
                                                      tags=request.POST["tags"].strip().split(","))
 
     (ret_code, out, err) = algorithm_controller.add_algorithm(new_algo)
 
-    assert ret_code == 0
+    if ret_code == STATUS_SUCCESS:
+        out_all = "Algorithm was successfully added! "
+    else:
+        out_all = "Failed to add algorithm! <br> ret_code = " + str(ret_code)
 
-    # TODO: print to the redirected html page
-
-    out_all = "OUTPUT STREAM FROM BUILD---> "
-    for line in out.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
-
-    out_all += "<br><br> ERROR STREAM FROM BUILD---> "
-    for line in err.splitlines():
-        new_algo.build_options += line.strip().decode('utf-8') + "<br>"
-
-    (ret_code, out, err) = algorithm_controller.run_algorithm(new_algo.name)
-    out_all += " <br><br> ret_code = " + str(ret_code)
-
-    out_all += "<br><br> OUTPUT STREAM FROM EXE---> "
+    out_all += "<br><br> OUTPUT STREAM FROM BUILD---> "
     for line in out.splitlines():
         out_all += line.strip().decode('utf-8') + "<br>"
 
@@ -317,8 +314,19 @@ def submit_algorithm(request):
     for line in err.splitlines():
         out_all += line.strip().decode('utf-8') + "<br>"
 
-    test_data.save()
-    new_algo.test_data_id = test_data
-    new_algo.save()
+    if ret_code == STATUS_SUCCESS:
+        (ret_code, out, err) = algorithm_controller.run_algorithm(new_algo.name)
+        if ret_code == STATUS_SUCCESS:
+            out_all += "<br><br>Algorithm was successfully run!"
+        else:
+            out_all += "<br><br> Failed to run algorithm! <br> ret_code = " + str(ret_code)
+
+        out_all += "<br><br> OUTPUT STREAM FROM EXE---> "
+        for line in out.splitlines():
+            out_all += line.strip().decode('utf-8') + "<br>"
+
+        out_all += "<br><br> ERROR STREAM FROM BUILD---> "
+        for line in err.splitlines():
+            out_all += line.strip().decode('utf-8') + "<br>"
 
     return HttpResponse(out_all)

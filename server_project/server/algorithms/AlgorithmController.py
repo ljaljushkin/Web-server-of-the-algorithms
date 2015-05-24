@@ -5,7 +5,7 @@ from build_bot_project.build_bot import BuildBot
 from build_bot_project.languages.cpp_language import CPPLanguage
 from build_bot_project.languages.cs_language import CSLanguage
 from build_bot_project.languages.fp_language import FPLanguage
-from common.cmd_utils import STATUS_SUCCESS
+from common.cmd_utils import STATUS_SUCCESS, STATUS_ERROR_LANGUAGE_NOT_FOUND
 from test_bot_project.test_bot import TestBot
 
 
@@ -95,7 +95,7 @@ class AlgorithmController(IAlgorithmController):
         algorithm.build_options = build_options
         algorithm.testdata_id = testdata_id
         algorithm.price = price
-        algorithm.language = old_algorithm.language
+        algorithm.language = language
 
         old_tags_list = TagList.objects.filter(algorithm_id=algorithm).all()
         old_tags_list.delete()
@@ -123,6 +123,11 @@ class AlgorithmController(IAlgorithmController):
         (ret_code, out, err) = self._build_algorithm(algorithm)
         if ret_code == STATUS_SUCCESS:
             algorithm.save()
+        return ret_code
+
+    @staticmethod
+    def get_languages_list():
+        return [CPPLanguage.get_name(), CSLanguage.get_name(), FPLanguage.get_name()]
 
     @staticmethod
     def create_algorithm(name,
@@ -169,13 +174,14 @@ class AlgorithmController(IAlgorithmController):
         return self._get_algorithm_dir(algorithm) + os.sep + algorithm.name + ".exe"
 
     def _build_algorithm(self, algorithm):
-        language = None
-        if algorithm.language == "cpp":
+        if algorithm.language == CPPLanguage.get_name():
             language = CPPLanguage(self.config_parser)
-        elif algorithm.language == "cs":
+        elif algorithm.language == CSLanguage.get_name():
             language = CSLanguage(self.config_parser)
-        elif algorithm.language == "fp":
+        elif algorithm.language == FPLanguage.get_name():
             language = FPLanguage(self.config_parser)
+        else:
+            return [STATUS_ERROR_LANGUAGE_NOT_FOUND, "", ""]
 
         self.build_bot.set_language(language)
 
@@ -183,7 +189,7 @@ class AlgorithmController(IAlgorithmController):
         if not os.path.exists(algorithm_dir):
             os.makedirs(algorithm_dir)
 
-        source_file = algorithm_dir + os.sep + algorithm.name + "." + algorithm.language
+        source_file = algorithm_dir + os.sep + algorithm.name + "." + language.get_extension()
 
         with open(source_file, "wb") as src_file:
             src_file.write(algorithm.source_code)

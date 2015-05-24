@@ -6,6 +6,7 @@ from build_bot_project.languages.ilanguage import ILanguage
 
 
 class CPPLanguage(ILanguage):
+
     COMPILER_FILE = "cl.exe"
     VC_BAT_FILE = "vcvarsall.bat"
 
@@ -37,3 +38,11 @@ class CPPLanguage(ILanguage):
                       + " /Fo" + temp_dir \
                       + " /Fe" + str(exe_path)
         return compile_cmd
+
+    @staticmethod
+    def get_extension(**kwargs):
+        return "cpp"
+
+    @staticmethod
+    def get_name(**kwargs):
+        return "C++"
