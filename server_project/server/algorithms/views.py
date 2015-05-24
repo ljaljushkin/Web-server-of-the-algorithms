@@ -52,7 +52,7 @@ def refill(request):
     try:
         user = User.objects.filter(login=login).get()
     except BoughtAlgorithm.DoesNotExist:
-        return render(request, "algorithms/error.html", dict(error="User does not exist!"))
+        return render(request, "algorithms/error.html", dict(login=login, error="User does not exist!"))
         
     #WORKAROUND: should be done through not fake paycontroller#
     user.account_cash += int(request.POST["amount"])
@@ -185,7 +185,7 @@ def buy_algorithm(request, alg_name):
     try:
         user = User.objects.filter(login=login).get()
         bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
-        return render(request, "algorithms/error.html", dict(error="Algorithm was already bought!"))
+        return render(request, "algorithms/error.html", dict(login=login, error="Algorithm was already bought!"))
     except BoughtAlgorithm.DoesNotExist:
         pay_controller = FakePayController()
         if pay_controller.send_money(algorithm.price, login, algorithm.user_id.login):
@@ -196,7 +196,7 @@ def buy_algorithm(request, alg_name):
 
             return HttpResponseRedirect("/algorithms/" + alg_name)
         else:
-            return render(request, "algorithms/error.html", dict(error="Not enough money!"))
+            return render(request, "algorithms/error.html", dict(login=login, error="Not enough money!"))
 
 
 def update_algorithm_page(request, alg_name):
@@ -210,7 +210,7 @@ def update_algorithm_page(request, alg_name):
     algorithm = algorithm_controller.get_algorithm(alg_name)
     
     if algorithm.user_id != User.objects.filter(login=login).get():
-        return render(request, "algorithms/error.html", dict(error="Access denied!"))
+        return render(request, "algorithms/error.html", dict(login=login, error="Access denied!"))
 
     tags_list = get_tags_for_algorithm(algorithm)
     tags_string = ",".join(tags_list)
@@ -241,7 +241,7 @@ def update_algorithm(request):
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
     if algorithm.user_id != User.objects.filter(login=login).get():
-        return render(request, "algorithms/error.html", dict(error="Access denied!"))
+        return render(request, "algorithms/error.html", dict(login=login, error="Access denied!"))
         
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
@@ -346,20 +346,20 @@ def register(request):
         if request.POST["login"] == "" \
             or request.POST["email"] == "" \
             or request.POST["password"] == "":
-            return render(request, "algorithms/error.html", dict(error="Please fill in the fields!"))
+            return render(request, "algorithms/error.html", dict(login=login, error="Please fill in the fields!"))
         
         if request.POST["password"] != request.POST["confirm_password"]:
-            return render(request, "algorithms/error.html", dict(error="Passwords did not match!"))
+            return render(request, "algorithms/error.html", dict(login=login, error="Passwords did not match!"))
         
         try:
             User.objects.filter(login=request.POST["login"]).get()
-            return render(request, "algorithms/error.html", dict(error="Such user is already registered!"))
+            return render(request, "algorithms/error.html", dict(login=login, error="Such user is already registered!"))
         except User.DoesNotExist:
             pass
         
         try:
             User.objects.filter(email=request.POST["email"]).get()
-            return render(request, "algorithms/error.html", dict(error="Such email is already registered!"))
+            return render(request, "algorithms/error.html", dict(login=login, error="Such email is already registered!"))
         except User.DoesNotExist:
             pass
         
