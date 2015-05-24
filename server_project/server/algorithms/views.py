@@ -289,6 +289,8 @@ def register(request):
                                    password=request.POST["password"],
                                    account_cash=0)
         user.save()
+        request.session["login"] = user.login
+        return login(request)
     return render(request,
                   "algorithms/register.html",
         {})
