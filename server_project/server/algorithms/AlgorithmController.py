@@ -52,8 +52,23 @@ class AlgorithmController(IAlgorithmController):
     def get_algorithms_list(self):
         return Algorithm.objects.all()
 
+    def get_tagged_algorithms_list(self, tag):
+        tag_db = Tag.objects.filter(tag_name=tag).all()
+        # tagged_algorithm_ids = TagList.objects.filter(tag_id=tag_db).all()
+        tagged_algorithms = Algorithm.objects.filter(
+            algorithm_id__in=TagList.objects.filter(tag_id=tag_db).values_list('algorithm_id'))
+
+        return tagged_algorithms
+
     def get_algorithm_names_list(self):
         alg_obj_list = self.get_algorithms_list()
+        result = []
+        for item in alg_obj_list:
+            result.append(item.name)
+        return result
+
+    def get_tagged_algorithm_names_list(self, tag):
+        alg_obj_list = self.get_tagged_algorithms_list(tag)
         result = []
         for item in alg_obj_list:
             result.append(item.name)
@@ -66,7 +81,8 @@ class AlgorithmController(IAlgorithmController):
                          build_options,
                          testdata_id,
                          price,
-                         language):
+                         language,
+                         tags):
         old_algorithm = self.get_algorithm(name)
         algorithm = self.get_algorithm(name)
 
@@ -80,6 +96,29 @@ class AlgorithmController(IAlgorithmController):
         algorithm.testdata_id = testdata_id
         algorithm.price = price
         algorithm.language = old_algorithm.language
+
+        old_tags_list = TagList.objects.filter(algorithm_id=algorithm).all()
+        old_tags_list.delete()
+
+        all_tags = Tag.objects.all()
+        for tag in all_tags:
+            try:
+                TagList.objects.filter(tag_id=tag).all()
+            except TagList.DoesNotExist:
+                tag.delete()
+
+        for tag in tags:
+            db_tag = ""
+
+            try:
+                db_tag = Tag.objects.filter(tag_name=tag.strip()).get()
+            except Tag.DoesNotExist:
+                db_tag = Tag.objects.create(tag_name=tag.strip())
+                db_tag.save()
+
+            algorithm_tag = TagList.objects.create(tag_id=db_tag,
+                                                   algorithm_id=algorithm)
+            algorithm_tag.save()
 
         (ret_code, out, err) = self._build_algorithm(algorithm)
         if ret_code == STATUS_SUCCESS:
@@ -112,9 +151,9 @@ class AlgorithmController(IAlgorithmController):
             db_tag = ""
 
             try:
-                db_tag = Tag.objects.filter(tag_name=tag).get()
+                db_tag = Tag.objects.filter(tag_name=tag.strip()).get()
             except Tag.DoesNotExist:
-                db_tag = Tag.objects.create(tag_name=tag)
+                db_tag = Tag.objects.create(tag_name=tag.strip())
                 db_tag.save()
 
             algorithm_tag = TagList.objects.create(tag_id=db_tag,

@@ -6,7 +6,8 @@ from algorithms import IAlgorithmController
 from algorithms import IPayController
 from algorithms.AlgorithmController import AlgorithmController
 from algorithms.FakePayController import FakePayController
-from algorithms.models import User, TestData, Status, BoughtAlgorithm
+
+from algorithms.models import User, TestData, Status, BoughtAlgorithm, Tag, TagList
 
 algorithm_controller = IAlgorithmController
 config_parser = None
@@ -38,10 +39,48 @@ def index(request):
     algorithm_controller = create_algorithm_controller()
     algs_list = algorithm_controller.get_algorithm_names_list()
 
+    tags_list_db = Tag.objects.all()
+    tags_list = []
+
+    for tag in tags_list_db:
+        tags_list.append(tag.tag_name)
+
     return render(request,
                   "algorithms/index.html",
                   {"algs_list": algs_list,
+                   "tags_list": tags_list,
                    "login": login})
+
+
+def get_tagged_algorithms(request, tag):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+
+    algorithm_controller = create_algorithm_controller()
+    algs_list = algorithm_controller.get_tagged_algorithm_names_list(tag)
+
+    tags_list_db = Tag.objects.all()
+    tags_list = []
+
+    for tag in tags_list_db:
+        tags_list.append(tag.tag_name)
+
+    return render(request,
+                  "algorithms/index.html",
+                  {"algs_list": algs_list,
+                   "tags_list": tags_list,
+                   "login": login})
+
+
+def get_tags_for_algorithm(algorithm):
+    tags_list_db = TagList.objects.filter(algorithm_id=algorithm).all()
+    tags_list = []
+
+    for tag in tags_list_db:
+        tags_list.append(tag.tag_id.tag_name)
+
+    return tags_list
 
 
 def alg_details(request, alg_name):
@@ -53,13 +92,16 @@ def alg_details(request, alg_name):
     # TODO: tags
     is_bought = False
 
-    if login != []:
+    if login:
         try:
             user = User.objects.filter(login=login).get()
             bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
             is_bought = True
         except BoughtAlgorithm.DoesNotExist:
             is_bought = False
+
+    tags_list = get_tags_for_algorithm(algorithm)
+    tags_string = ",".join(tags_list)
 
     return render(request,
                   "algorithms/alg_details.html",
@@ -71,7 +113,7 @@ def alg_details(request, alg_name):
                        run_options=algorithm.testdata_id.run_options,
                        test_data=algorithm.testdata_id.input_data,
                        price=algorithm.price,
-                       tags="TBD",
+                       tags=tags_string,
                        login=login,
                        is_bought=is_bought))
 
@@ -128,6 +170,9 @@ def update_algorithm_page(request, alg_name):
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
 
+    tags_list = get_tags_for_algorithm(algorithm)
+    tags_string = ",".join(tags_list)
+
     return render(request,
                   "algorithms/update_algorithm.html",
                   dict(login=login,
@@ -138,7 +183,8 @@ def update_algorithm_page(request, alg_name):
                        build_string=algorithm.build_options,
                        run_string=algorithm.testdata_id.run_options,
                        test_data=algorithm.testdata_id.input_data,
-                       price=algorithm.price))
+                       price=algorithm.price,
+                       tags=tags_string))
 
 
 def update_algorithm(request):
@@ -160,7 +206,8 @@ def update_algorithm(request):
                                           build_options=request.POST["build_string"],
                                           testdata_id=test_data,
                                           price=request.POST["price"],
-                                          language=request.POST["language"])
+                                          language=request.POST["language"],
+                                          tags=request.POST["tags"].strip().split(","))
     return HttpResponse("successfully updated")
 
 
