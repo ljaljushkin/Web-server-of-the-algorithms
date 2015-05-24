@@ -3,7 +3,7 @@ import unittest
 
 import pytest
 from build_bot_project.build_bot import BuildBot
-from build_bot_project.languages.cs_language import CSLanguage
+from build_bot_project.languages.fp_language import FPLanguage
 from common.cmd_utils import shell, split_lines
 
 
@@ -11,10 +11,10 @@ test_name = __name__
 
 
 @pytest.mark.usefixtures("test_build_directory_fixture", "test_config_fixture")
-class CsBuildBotTests(unittest.TestCase):
+class FPBuildBotTests(unittest.TestCase):
     def setUp(self):
-        self.test_file_name = "cs_basic"
-        self.test_src_name = self.test_file_name + ".cs"
+        self.test_file_name = "fp_basic"
+        self.test_src_name = self.test_file_name + ".pas"
         self.test_exe_name = self.test_file_name + ".exe"
 
         self.test_src_file_path = os.path.join(self.src_code_dir, self.test_src_name)
@@ -22,9 +22,9 @@ class CsBuildBotTests(unittest.TestCase):
         self.output_dir = os.path.join(self.build_dir, "cfg_output_dir")
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-        self.test_exe_path = os.path.join(self.output_dir, self.test_exe_name)
+        self.test_exe_path = self.output_dir
 
-        self.language = CSLanguage(self.config_parser)
+        self.language = FPLanguage(self.config_parser)
         self.build_bot = BuildBot()
         self.build_bot.set_language(self.language)
 
@@ -45,6 +45,8 @@ class CsBuildBotTests(unittest.TestCase):
 
     def test_can_successfully_run_created_exe_file(self):
         self.build_bot.build(self.test_src_file_path, self.test_exe_path)
-        (ret_code, out, err) = shell(self.test_exe_path)
+        test_exe = os.path.join(self.output_dir, self.test_exe_name)
+        (ret_code, out, err) = shell(test_exe)
+        self.assertEquals(split_lines(out).pop(0), "Hello, world.")
         self.assertEquals(ret_code, 0)
-        self.assertEquals(split_lines(out).pop(0), "Hello World using C#!")
+
