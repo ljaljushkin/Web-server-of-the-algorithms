@@ -61,13 +61,15 @@ def refill(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
     
     
-def index(request):
+def index(request, custom_algs_list=None):
     login = []
     if "login" in request.session.keys():
         login = request.session["login"]
 
-    algorithm_controller = create_algorithm_controller()
-    algs_list = algorithm_controller.get_algorithm_names_list()
+    algs_list = custom_algs_list
+    if algs_list == None:
+        algorithm_controller = create_algorithm_controller()
+        algs_list = algorithm_controller.get_algorithm_names_list()
 
     tags_list_db = Tag.objects.all()
     tags_list = []
@@ -321,6 +323,14 @@ def logout(request):
         pass
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
 
+def my_algorithms(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
+        
+    return index(request, create_algorithm_controller().get_user_algorithm_names_list(User.objects.filter(login=login).get()))
 
 def register(request):
     _login = []

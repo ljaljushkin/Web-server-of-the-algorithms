@@ -1,6 +1,6 @@
 <div>
     {% if login %}
-        <p><a href="{% url 'index' %}">My Algorithms</a></p>
+        <p><a href="{% url 'my_algorithms' %}">My Algorithms</a></p>
         <p><a href="{% url 'add_algorithm' %}">Add Algorithm</a></p>
         <p>Account Cash: {{ account_cash }}</p>
         <form name="refill_form" id="refill_form" action="{% url 'refill' %}" method="post">

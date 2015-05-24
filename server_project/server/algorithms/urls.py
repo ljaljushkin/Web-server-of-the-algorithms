@@ -16,4 +16,5 @@ urlpatterns = patterns("",
                        url(r"run/([-\w]+)$", views.run_existing_algo, name="run_existing_algo"),
                        url(r'^([-\w]+)$', views.alg_details, name="alg_details"),
                        url(r'^([-\w]+)/description/$', views.alg_description, name="alg_details"),
-                       url(r"refill/$", views.refill, name="refill"))
+                       url(r"refill/$", views.refill, name="refill"),
+                       url(r"my/$", views.my_algorithms, name="my_algorithms"))
