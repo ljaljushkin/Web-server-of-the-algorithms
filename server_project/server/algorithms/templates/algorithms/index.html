@@ -45,8 +45,7 @@
             <!-- BODY #1 -->
             <td>
                 {% csrf_token %}
-                <input type="text" value="">
-                <input type="button" value="Search"><br>
+                <p>Search: <input type="text" id="searchText" value=""></p>
                 <select name="selected_alg" multiple="False" id='lstBox1' style="font-family:verdana;
                                                     font-size:10pt;
                                                     width : 400px;
@@ -114,6 +113,39 @@ function getDescription(){
         });
 }
 
+jQuery.fn.filterByText = function(textbox, selectSingleMatch) {
+  return this.each(function() {
+    var select = this;
+    var options = [];
+    $(select).find('option').each(function() {
+      options.push({value: $(this).val(), text: $(this).text()});
+    });
+    $(select).data('options', options);
+    $(textbox).bind('change keyup', function() {
+      var options = $(select).empty().scrollTop(0).data('options');
+      var search = $.trim($(this).val());
+      var regex = new RegExp(search,'gi');
+
+      $.each(options, function(i) {
+        var option = options[i];
+        if(option.text.match(regex) !== null) {
+          $(select).append(
+             $('<option>').text(option.text).val(option.value)
+          );
+        }
+      });
+      if (selectSingleMatch === true && 
+          $(select).children().length === 1) {
+        $(select).children().get(0).selected = true;
+      }
+    });
+  });
+};
+
+$(function(){
+    $("#lstBox1").filterByText($("#searchText"), true);
+});
+
 function redirect() {
     var algSelect = $("#lstBox1 option:selected").text();
 
@@ -122,21 +154,6 @@ function redirect() {
     
     window.location.replace(newUrl);
     
-}
-
-
-function updateAlgorithm() {
-    var algSelect = $("#lstBox1 option:selected").text();
-    if (algSelect == "")
-        return;
-
-    var currUrl = window.location.href;
-
-    var newUrl = "";
-
-    newUrl = currUrl + "update_algorithm_page/" + algSelect;
-    newUrl = newUrl.replace(/\s/g, '');
-    window.location.replace(newUrl);
 }
 
 </script>
