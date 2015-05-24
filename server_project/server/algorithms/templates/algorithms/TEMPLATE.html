@@ -1,0 +1,44 @@
+USE general page structure:
+
+<head lang="en">
+    <!-- HEAD -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+            <!-- HOME -->
+            <!-- HEADER -->
+            <!-- LOGIN CORNER -->
+            <td>{% include "algorithms/home.html" %}</td>
+            <td><h1>HEADER</h1></td>
+            <td>{% include "algorithms/login_corner.html" %}</td>
+        </tr>
+        </tbody>
+    </table>
+    
+</head>
+<hr>
+<body>
+
+    <!-- BODY -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+        
+            <!-- USER TAB -->
+            <td>
+                {% include "algorithms/user_tab.html" %}  
+            </td>
+            
+            <!-- BODY #1 -->
+            <td></td>
+            
+            <!-- BODY #2 -->
+            <td></td>
+            
+        </tr>
+        </tbody>
+    </table>
+
+</body>

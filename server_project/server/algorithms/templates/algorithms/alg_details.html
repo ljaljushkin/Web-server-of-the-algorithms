@@ -5,37 +5,81 @@
     <meta charset="UTF-8">
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    {% include "algorithms/login_corner.html" %}
+        
+    <!-- HEAD -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+            <!-- HOME -->
+            <!-- HEADER -->
+            <!-- LOGIN CORNER -->
+            <td>{% include "algorithms/home.html" %}</td>
+            <td><h1>Algorithm</h1></td>
+            <td>{% include "algorithms/login_corner.html" %}</td>
+        </tr>
+        </tbody>
+    </table>
+    
 </head>
+<hr>
 <body>
-    <h1>Algorithm</h1>
-    <hr>
-    <center>
-        <form name="form" id="form" action="{% url 'run_existing_algo' name %}" method="post">
-            {% csrf_token %}
-            <p>Name: {{ name }}</p>
-            <p>Description: {{ description }}</p>
-            <p>Language: {{ language }}</p>
-            {% if is_bought %}
-                <p>Code: {{ source_code }}</p>
-            {% endif %}
-            <p>Build string {{ build_options }} </p><br>
-            <p>Run string {{ run_options }} </p><br>
-            <p>Test data {{ test_data }} </p><br>
-            <p>Price {{ price }} </p><br>
-            <p>Tags {{ tags }} </p><br>
-            <input type="submit" value="RUN!!!">
-        </form>
-        {% if not is_bought %}
-            <form name="buy_algorithm" id="buy_algorithm" action="{% url 'buy_algorithm' name %}" method="post" >
-                {% csrf_token %}
-                {% if price == 0 %}
-                    <input type="submit" name="get_algorithm" value="Get algorithm">
-                {% else %}
-                    <input type="submit" name="buy_algorithm" value="Buy algorithm">
+
+    <!-- BODY -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+        
+            <!-- USER TAB -->
+            <td>
+                {% include "algorithms/user_tab.html" %}  
+            </td>
+            
+            <!-- BODY #1 -->
+            <td>
+                <form name="form" id="form" action="{% url 'run_existing_algo' name %}" method="post">
+                    {% csrf_token %}
+                    <p>Name: {{ name }}</p>
+                    <p>Description: {{ description }}</p>
+                    <p>Language: {{ language }}</p>
+                    {% if is_bought %}
+                        <p>Code: {{ source_code }}</p>
+                    {% endif %}
+                    <p>Build string: {{ build_options }} </p>
+                    <p>Run string: {{ run_options }} </p>
+                    <p>Test data: {{ test_data }} </p>
+                    <p>Price: {{ price }} </p>
+                    <p>Tags: {{ tags }} </p>
+                    <input type="submit" value="Run">
+                </form>
+                {% if not is_bought %}
+                    <form name="buy_algorithm" id="buy_algorithm" action="{% url 'buy_algorithm' name %}" method="post" >
+                        {% csrf_token %}
+                        {% if price == 0 %}
+                            <input type="submit" name="get_algorithm" value="Get algorithm">
+                        {% else %}
+                            <input type="submit" name="buy_algorithm" value="Buy algorithm">
+                        {% endif %}
+                    </form>
                 {% endif %}
-            </form>
-        {% endif %}
-    </center>
+                {% if is_mine %}
+                    <form name="update_algorithm" id="update_algorithm" action="{% url 'update_algorithm' name %}" method="post" >
+                        {% csrf_token %}
+                            <input type="submit" name="update_algorithm" value="Update">
+                    </form>
+                {% endif %}
+            </td>
+            
+            <!-- BODY #2 -->
+            <td>
+            {% if output != None%}
+                {{output}}
+            {% endif %}
+            </td>
+            
+        </tr>
+        </tbody>
+    </table>
 </body>
 </html>

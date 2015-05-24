@@ -16,10 +16,10 @@ pay_controller = IPayController
 
 
 def validate_config_parser(config_parser):
-    config_parser.get("general", "work_dir")
-    config_parser.get("compiler_paths", "cpp_path")
-    config_parser.get("compiler_paths", "cs_path")
-    config_parser.get("compiler_paths", "fp_path")
+    config_parser.get("general", "work_dir_Fedya1")
+    config_parser.get("compiler_paths", "cpp_path_Fedya1")
+    #config_parser.get("compiler_paths", "cs_path")
+    #config_parser.get("compiler_paths", "fp_path")
     return True
 
 
@@ -41,15 +41,35 @@ def alg_description(request, alg_name):
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
     return HttpResponse(algorithm.description)
-
-
-def index(request):
+    
+def refill(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
+        
+    try:
+        user = User.objects.filter(login=login).get()
+    except BoughtAlgorithm.DoesNotExist:
+        return render(request, "algorithms/error.html", dict(login=login, error="User does not exist!"))
+        
+    #WORKAROUND: should be done through not fake paycontroller#
+    user.account_cash += int(request.POST["amount"])
+    user.save()
+    
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
+    
+    
+def index(request, custom_algs_list=None):
     login = []
     if "login" in request.session.keys():
         login = request.session["login"]
 
-    algorithm_controller = create_algorithm_controller()
-    algs_list = algorithm_controller.get_algorithm_names_list()
+    algs_list = custom_algs_list
+    if algs_list == None:
+        algorithm_controller = create_algorithm_controller()
+        algs_list = algorithm_controller.get_algorithm_names_list()
 
     tags_list_db = Tag.objects.all()
     tags_list = []
@@ -95,20 +115,25 @@ def get_tags_for_algorithm(algorithm):
     return tags_list
 
 
-def alg_details(request, alg_name):
+def alg_details(request, alg_name, output=None):
     login = []
     if "login" in request.session.keys():
         login = request.session["login"]
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
-    # TODO: tags
     is_bought = False
+    is_mine = False
 
     if login:
         try:
             user = User.objects.filter(login=login).get()
-            bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
-            is_bought = True
+            if algorithm.user_id == user:
+                is_mine = True
+                is_bought=True
+            else:
+                bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
+                is_bought = True
+            
         except BoughtAlgorithm.DoesNotExist:
             is_bought = False
 
@@ -127,7 +152,9 @@ def alg_details(request, alg_name):
                        price=algorithm.price,
                        tags=tags_string,
                        login=login,
-                       is_bought=is_bought))
+                       is_bought=is_bought,
+                       output=output,
+                       is_mine=is_mine))
 
 
 def add_algorithm(request):
@@ -158,7 +185,7 @@ def buy_algorithm(request, alg_name):
     try:
         user = User.objects.filter(login=login).get()
         bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
-        return HttpResponse("Already bought!")
+        return render(request, "algorithms/error.html", dict(login=login, error="Algorithm was already bought!"))
     except BoughtAlgorithm.DoesNotExist:
         pay_controller = FakePayController()
         if pay_controller.send_money(algorithm.price, login, algorithm.user_id.login):
@@ -169,7 +196,7 @@ def buy_algorithm(request, alg_name):
 
             return HttpResponseRedirect("/algorithms/" + alg_name)
         else:
-            return HttpResponse("Not enough money!")
+            return render(request, "algorithms/error.html", dict(login=login, error="Not enough money!"))
 
 
 def update_algorithm_page(request, alg_name):
@@ -181,6 +208,9 @@ def update_algorithm_page(request, alg_name):
 
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
+    
+    if algorithm.user_id != User.objects.filter(login=login).get():
+        return render(request, "algorithms/error.html", dict(login=login, error="Access denied!"))
 
     tags_list = get_tags_for_algorithm(algorithm)
     tags_string = ",".join(tags_list)
@@ -206,13 +236,19 @@ def update_algorithm(request):
     else:
         return HttpResponseRedirect('/algorithms/login/')
 
+    alg_name = request.POST["name"]
+        
     algorithm_controller = create_algorithm_controller()
+    algorithm = algorithm_controller.get_algorithm(alg_name)
+    if algorithm.user_id != User.objects.filter(login=login).get():
+        return render(request, "algorithms/error.html", dict(login=login, error="Access denied!"))
+        
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
                                         run_options=request.POST["run_string"])
     test_data.save()
 
-    (ret_code, out, err) = algorithm_controller.update_algorithm(name=request.POST["name"],
+    (ret_code, out, err) = algorithm_controller.update_algorithm(name=alg_name,
                                                                  description=request.POST["description"],
                                                                  source_code=request.POST["code"],
                                                                  build_options=request.POST["build_string"],
@@ -228,13 +264,15 @@ def update_algorithm(request):
 
     out_all += "<br><br> OUTPUT STREAM FROM BUILD---> "
     for line in out.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
     out_all += "<br><br> ERROR STREAM FROM BUILD---> "
     for line in err.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
-    return HttpResponse(out_all)
+    print out_all
+        
+    return HttpResponseRedirect("/algorithms/run/" + alg_name)
 
 
 def run_existing_algo(request, alg_name):
@@ -247,10 +285,15 @@ def run_existing_algo(request, alg_name):
     out_all += "<br>"
     for line in err.splitlines():
         out_all += line.strip().decode('utf-8')
-    return HttpResponse(out_all)
+    return alg_details(request, alg_name, out_all)
 
 
 def login(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+        return render(request, "algorithms/login.html", dict(login=login))
+
     if "login" in request.POST.keys() \
             and "password" in request.POST.keys():
 
@@ -263,7 +306,8 @@ def login(request):
 
         if user is not None:
             request.session["login"] = user.login
-            return HttpResponseRedirect('/algorithms/')
+            request.session["account_cash"] = user.account_cash
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
         else:
             return HttpResponseRedirect('/algorithms/register/')
     return render(request,
@@ -274,21 +318,58 @@ def login(request):
 def logout(request):
     try:
         del request.session['login']
+        del request.session['account_cash']
     except KeyError:
         pass
-    return HttpResponseRedirect('/algorithms/')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
 
+def my_algorithms(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
+        
+    return index(request, create_algorithm_controller().get_user_algorithm_names_list(User.objects.filter(login=login).get()))
 
 def register(request):
+    _login = []
+    if "login" in request.session.keys():
+        _login = request.session["login"]
+        return render(request, "algorithms/login.html", dict(login=_login))
+
     if "login" in request.POST.keys() \
             and "email" in request.POST.keys() \
-            and "password" in request.POST.keys():
-        print (request.POST["login"])
+            and "password" in request.POST.keys() \
+            and "confirm_password" in request.POST.keys():
+        
+        if request.POST["login"] == "" \
+            or request.POST["email"] == "" \
+            or request.POST["password"] == "":
+            return render(request, "algorithms/error.html", dict(login=login, error="Please fill in the fields!"))
+        
+        if request.POST["password"] != request.POST["confirm_password"]:
+            return render(request, "algorithms/error.html", dict(login=login, error="Passwords did not match!"))
+        
+        try:
+            User.objects.filter(login=request.POST["login"]).get()
+            return render(request, "algorithms/error.html", dict(login=login, error="Such user is already registered!"))
+        except User.DoesNotExist:
+            pass
+        
+        try:
+            User.objects.filter(email=request.POST["email"]).get()
+            return render(request, "algorithms/error.html", dict(login=login, error="Such email is already registered!"))
+        except User.DoesNotExist:
+            pass
+        
         user = User.objects.create(login=request.POST["login"],
                                    email=request.POST["email"],
                                    password=request.POST["password"],
                                    account_cash=0)
         user.save()
+        request.session["login"] = user.login
+        return login(request)
     return render(request,
                   "algorithms/register.html",
         {})
@@ -327,25 +408,12 @@ def submit_algorithm(request):
 
     out_all += "<br><br> OUTPUT STREAM FROM BUILD---> "
     for line in out.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
     out_all += "<br><br> ERROR STREAM FROM BUILD---> "
     for line in err.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
-    if ret_code == STATUS_SUCCESS:
-        (ret_code, out, err) = algorithm_controller.run_algorithm(new_algo.name)
-        if ret_code == STATUS_SUCCESS:
-            out_all += "<br><br>Algorithm was successfully run!"
-        else:
-            out_all += "<br><br> Failed to run algorithm! <br> ret_code = " + str(ret_code)
-
-        out_all += "<br><br> OUTPUT STREAM FROM EXE---> "
-        for line in out.splitlines():
-            out_all += line.strip().decode('utf-8') + "<br>"
-
-        out_all += "<br><br> ERROR STREAM FROM BUILD---> "
-        for line in err.splitlines():
-            out_all += line.strip().decode('utf-8') + "<br>"
-
-    return HttpResponse(out_all)
+    print out_all
+        
+    return run_existing_algo(request, new_algo.name)

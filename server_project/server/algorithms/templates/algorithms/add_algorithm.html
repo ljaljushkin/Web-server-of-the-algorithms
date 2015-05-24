@@ -5,32 +5,65 @@
     <meta charset="UTF-8">
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    {% include "algorithms/login_corner.html" %}
+
+    <!-- HEAD -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+            <!-- HOME -->
+            <!-- HEADER -->
+            <!-- LOGIN CORNER -->
+            <td>{% include "algorithms/home.html" %}</td>
+            <td><h1>Add algorithm</h1></td>
+            <td>{% include "algorithms/login_corner.html" %}</td>
+        </tr>
+        </tbody>
+    </table>
+    
 </head>
+<hr>
 <body>    
-    <h1>Add algorithm </h1>
-    <hr>
-    <center>
-        <form name="form" id="form" action="{% url 'submit_algorithm' %}" method="post">
-            {% csrf_token %}
-            <p>Name</p><input name="name" id="name" type="text" width="400px"><br>
-            <p>Description</p><textarea name="description" id="description"></textarea><br>
-            <p>Language</p>
-                <select name="language" id="language">
-                {%for i in language_list%}
-                <option>
-                    {{i}}
-                </option>
-                {%endfor%}
-            </select><br>
-            <p>Code</p><textarea name="code" id="code"></textarea>
-            <p>Build string</p><input name="build_string" id="build_string" type="text" width="400px"><br>
-            <p>Run string</p><input name="run_string" id="run_string" type="text" width="400px"><br>
-            <p>Test data</p><textarea name="test_data" id="test_data"></textarea>
-            <p>Price</p><input name="price" id="price" type="text" width="400px"><br>
-            <p>Tags</p><input name="tags" id="tags" type="text" width="400px"><br>
-            <input type="submit">
-        </form>
-    </center>
+        <!-- BODY -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+        
+            <!-- USER TAB -->
+            <td>
+                {% include "algorithms/user_tab.html" %}  
+            </td>
+            
+            <!-- BODY #1 -->
+            <td>
+                <form name="form" id="form" action="{% url 'submit_algorithm' %}" method="post">
+                    {% csrf_token %}
+                    <p>Name</p><input name="name" id="name" type="text" width="400px"><br>
+                    <p>Description</p><textarea name="description" id="description"></textarea><br>
+                    <p>Language</p>
+                        <select name="language" id="language">
+                        {%for i in language_list%}
+                        <option>
+                            {{i}}
+                        </option>
+                        {%endfor%}
+                    </select><br>
+                    <p>Code</p><textarea name="code" id="code"></textarea>
+                    <p>Build string</p><input name="build_string" id="build_string" type="text" width="400px"><br>
+                    <p>Run string</p><input name="run_string" id="run_string" type="text" width="400px"><br>
+                    <p>Test data</p><textarea name="test_data" id="test_data"></textarea>
+                    <p>Price</p><input name="price" id="price" type="text" width="400px"><br>
+                    <p>Tags</p><input name="tags" id="tags" type="text" width="400px"><br>
+                    <input type="submit" value="Submit">
+                </form>
+            </td>
+    
+            <!-- BODY #2 -->
+            <td></td>
+            
+        </tr>
+        </tbody>
+    </table>
 </body>
 </html>
