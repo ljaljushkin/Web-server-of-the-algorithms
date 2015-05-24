@@ -341,6 +341,18 @@ def register(request):
         if request.POST["password"] != request.POST["confirm_password"]:
             return render(request, "algorithms/error.html", dict(error="Passwords did not match!"))
         
+        try:
+            User.objects.filter(login=request.POST["login"]).get()
+            return render(request, "algorithms/error.html", dict(error="Such user is already registered!"))
+        except User.DoesNotExist:
+            pass
+        
+        try:
+            User.objects.filter(email=request.POST["email"]).get()
+            return render(request, "algorithms/error.html", dict(error="Such email is already registered!"))
+        except User.DoesNotExist:
+            pass
+        
         user = User.objects.create(login=request.POST["login"],
                                    email=request.POST["email"],
                                    password=request.POST["password"],
