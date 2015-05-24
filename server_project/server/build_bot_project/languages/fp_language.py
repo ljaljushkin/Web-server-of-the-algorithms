@@ -9,7 +9,7 @@ class FPLanguage(ILanguage):
 
     COMPILER_FILE = "fpc.exe"
 
-    DEFAULT_COMPILER_DIR = "C:\\FPC\\2.6.4\\bin\\i386-win32"
+    DEFAULT_COMPILER_DIR = "C:\\FPC\\2.6.4\\bin\\i386-Win32"
     DEFAULT_COMPILER_PATH = os.path.join(DEFAULT_COMPILER_DIR, COMPILER_FILE)
 
     def __init__(self, config_parser=None):
@@ -26,10 +26,11 @@ class FPLanguage(ILanguage):
         return self.compiler_path
 
     def get_build_command(self, code_path, exe_path):
+        exe_dir = os.path.dirname(exe_path)
         temp_dir = tempfile.gettempdir()
         compile_cmd = screen_str(self.compiler_path) \
                       + " -Fo" + temp_dir \
-                      + " -FE" + str(exe_path) \
+                      + " -FE" + str(exe_dir) \
                       + " " + code_path
         return compile_cmd
 
