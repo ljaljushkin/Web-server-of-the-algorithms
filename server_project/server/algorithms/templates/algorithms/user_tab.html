@@ -1,0 +1,10 @@
+<div align="left">
+    {% if login %}
+        <p><a href="{% url 'index' %}">My Algorithms</a></p>
+        <p><a href="{% url 'add_algorithm' %}">Add Algorithm</a></p>
+        <form name="refill_form" id="refill_form" action="{% url 'index' %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Refill">
+        </form>
+    {% endif %}   
+</div>

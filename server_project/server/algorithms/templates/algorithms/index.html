@@ -9,35 +9,72 @@
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    {% include "algorithms/login_corner.html" %}
-    {% include "algorithms/home.html" %}
+    
+    <!-- HEAD -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+            <!-- HOME -->
+            <!-- HEADER -->
+            <!-- LOGIN CORNER -->
+            <td>{% include "algorithms/home.html" %}</td>
+            <td><h1>Main Page</h1></td>
+            <td>{% include "algorithms/login_corner.html" %}</td>
+        </tr>
+        </tbody>
+    </table>
+    
 </head>
+<hr>
 <body>
-    <h1>Main Page</h1>
-    <hr>
-    {% csrf_token %}
-    <input type="text" value="">
-    <input type="button" value="Search"><br>
-    <select name="selected_alg" multiple="False" id='lstBox1' style="font-family:verdana;
-                                        font-size:10pt;
-                                        width : 400px;
-                                        height:200px;">
-        {% for item in algs_list %}
-            <option id="{{ item }}" name="{{ item }}" value="{{ item }}" onclick="getDescription()"> {{ item }} </option>
-        {% endfor %}
-    </select><br>
-    <input type="button" value="GO!!!111111" onclick="redirect()"/>
-    <form name="add_algorithm" id="add_algorithm" action="{% url 'add_algorithm' %}" method="post" >
-        {% csrf_token %}
-        <input type="submit" name="add_algorithm" value="add_algorithm">
-    </form>
-    <input type="button" value="update" onclick="updateAlgorithm()"/><br>
-    {% csrf_token %}
-    <textarea readonly id="description" name="description" style="width:300px; height:200px;resize:none;font-family: monaco, Consolas, 'Lucida Console', monospace; font-size: 11px; font-style: normal; background: white;"> </textarea>
-
-    {% for tag in tags_list %}
-        <a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}">{{ tag }}</a>
-    {% endfor %}
+    <!-- BODY -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+        
+            <!-- USER TAB + TAGS-->
+            <td>
+                {% include "algorithms/user_tab.html" %}  
+                {% for tag in tags_list %}
+                    <a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}">{{ tag }}</a>
+                {% endfor %}
+            </td>
+            
+            <!-- BODY #1 -->
+            <td>
+                {% csrf_token %}
+                <input type="text" value="">
+                <input type="button" value="Search"><br>
+                <select name="selected_alg" multiple="False" id='lstBox1' style="font-family:verdana;
+                                                    font-size:10pt;
+                                                    width : 400px;
+                                                    height:200px;">
+                    {% for item in algs_list %}
+                        <option id="{{ item }}" name="{{ item }}" value="{{ item }}" onclick="getDescription()"> {{ item }} </option>
+                    {% endfor %}
+                </select><br>
+                <input type="button" value="GO!!!111111" onclick="redirect()"/>
+                <form name="add_algorithm" id="add_algorithm" action="{% url 'add_algorithm' %}" method="post" >
+                    {% csrf_token %}
+                    <input type="submit" name="add_algorithm" value="add_algorithm">
+                </form>
+                <input type="button" value="update" onclick="updateAlgorithm()"/><br>
+            </td>
+            
+            <!-- BODY #2 -->
+            <td>
+                {% csrf_token %}
+                <textarea readonly id="description" name="description" 
+                        style="width:300px; height:200px;resize:none;font-family: monaco, Consolas, 'Lucida Console', monospace; font-size: 11px; font-style: normal; background: white;"> 
+                </textarea>
+            </td>
+            
+        </tr>
+        </tbody>
+    </table>
+    
 </body>
 
 <script>
