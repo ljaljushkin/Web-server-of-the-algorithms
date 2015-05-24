@@ -263,7 +263,9 @@ def login(request):
 
         if user is not None:
             request.session["login"] = user.login
-            return HttpResponseRedirect('/algorithms/')
+            if request.META.get('HTTP_REFERER').endswith('/algorithms/login/'):
+                return HttpResponseRedirect('/algorithms/')
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
         else:
             return HttpResponseRedirect('/algorithms/register/')
     return render(request,
@@ -276,7 +278,7 @@ def logout(request):
         del request.session['login']
     except KeyError:
         pass
-    return HttpResponseRedirect('/algorithms/')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
 
 
 def register(request):

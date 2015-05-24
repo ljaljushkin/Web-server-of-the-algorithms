@@ -51,7 +51,7 @@
                     <p>Test data: {{ test_data }} </p>
                     <p>Price: {{ price }} </p>
                     <p>Tags: {{ tags }} </p>
-                    <input type="submit" value="RUN">
+                    <input type="submit" value="Run">
                 </form>
                 {% if not is_bought %}
                     <form name="buy_algorithm" id="buy_algorithm" action="{% url 'buy_algorithm' name %}" method="post" >

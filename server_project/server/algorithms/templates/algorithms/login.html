@@ -39,8 +39,8 @@
                 {% if not login %}
                     <form name="form" id="form" action="{% url 'login' %}" method="post">
                         {% csrf_token %}
-                        <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
-                        <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
+                        <p>Login </p><input name="login" id="login" type="text" width="400px"><br>
+                        <p>Password </p><input name="password" id="password" type="password" width="400px"><br>
                         <p><a href="{% url 'index' %}">Forgot password</a></p>
                         <input type="submit" value="Sign In">
                     </form>

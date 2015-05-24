@@ -56,7 +56,7 @@
                     {% endfor %}
                 </select><br>
                 <input type="button" value="View detailed info" onclick="redirect()"/>
-                <input type="button" value="update" onclick="updateAlgorithm()"/><br>
+                <input type="button" value="Update" onclick="updateAlgorithm()"/><br>
             </td>
             
             <!-- BODY #2 -->
@@ -128,6 +128,8 @@ function redirect() {
 
 function updateAlgorithm() {
     var algSelect = $("#lstBox1 option:selected").text();
+    if (algSelect == "")
+        return;
 
     var currUrl = window.location.href;
 

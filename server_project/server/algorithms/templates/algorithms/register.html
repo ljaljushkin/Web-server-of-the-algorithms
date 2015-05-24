@@ -16,8 +16,10 @@
         <tr>
             <!-- HOME -->
             <!-- HEADER -->
+            <!-- LOGIN CORNER -->
             <td>{% include "algorithms/home.html" %}</td>
-            <td><h1>REGISTRATION</h1></td>
+            <td><h1>Registration</h1></td>
+            <td>{% include "algorithms/login_corner.html" %}</td>
         </tr>
         </tbody>
     </table>
@@ -39,11 +41,11 @@
             <td>
                 <form name="form" id="form" action="{% url 'register' %}" method="post">
                     {% csrf_token %}
-                    <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
-                    <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
-                    <p>PASSWORD ECHO RAZ </p><input name="confirm_password" id="confirm_password" type="password" width="400px"><br>
-                    <p>EMAIL </p><input name="email" id="email" type="text" width="400px"><br>
-                    <input type="submit" value="REGISTER">
+                    <p>Login </p><input name="login" id="login" type="text" width="400px"><br>
+                    <p>Password </p><input name="password" id="password" type="password" width="400px"><br>
+                    <p>Confirm Password </p><input name="confirm_password" id="confirm_password" type="password" width="400px"><br>
+                    <p>Email </p><input name="email" id="email" type="text" width="400px"><br>
+                    <input type="submit" value="Register">
                 </form>
             </td>
             
