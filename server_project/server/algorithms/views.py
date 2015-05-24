@@ -200,6 +200,9 @@ def update_algorithm_page(request, alg_name):
 
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
+    
+    if algorithm.user_id != User.objects.filter(login=login).get():
+        return HttpResponse("You are not the owner!")
 
     tags_list = get_tags_for_algorithm(algorithm)
     tags_string = ",".join(tags_list)
@@ -306,10 +309,10 @@ def logout(request):
 
 
 def register(request):
-    login = []
+    _login = []
     if "login" in request.session.keys():
-        login = request.session["login"]
-        return render(request, "algorithms/login.html", dict(login=login))
+        _login = request.session["login"]
+        return render(request, "algorithms/login.html", dict(login=_login))
 
     if "login" in request.POST.keys() \
             and "email" in request.POST.keys() \
