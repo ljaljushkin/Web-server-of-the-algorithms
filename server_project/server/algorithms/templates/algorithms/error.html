@@ -8,7 +8,7 @@
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    
+
     <!-- HEAD -->
     <table style="width:100%">
         <tbody>
@@ -18,7 +18,7 @@
             <!-- HEADER -->
             <!-- LOGIN CORNER -->
             <td>{% include "algorithms/home.html" %}</td>
-            <td><h1>Registration</h1></td>
+            <td><h1>Error</h1></td>
             <td>{% include "algorithms/login_corner.html" %}</td>
         </tr>
         </tbody>
@@ -27,7 +27,7 @@
 </head>
 <hr>
 <body>
-    
+
     <!-- BODY -->
     <table style="width:100%">
         <tbody>
@@ -35,19 +35,12 @@
         <tr>
         
             <!-- USER TAB -->
-            <td></td>
+            <td>
+                {% include "algorithms/user_tab.html" %}  
+            </td>
             
             <!-- BODY #1 -->
-            <td>
-                <form name="form" id="form" action="{% url 'register' %}" method="post">
-                    {% csrf_token %}
-                    <p>Login </p><input name="login" id="login" type="text" width="400px"><br>
-                    <p>Password </p><input name="password" id="password" type="password" width="400px"><br>
-                    <p>Confirm Password </p><input name="confirm_password" id="confirm_password" type="password" width="400px"><br>
-                    <p>Email </p><input name="email" id="email" type="text" width="400px"><br>
-                    <input type="submit" value="Register">
-                </form>
-            </td>
+            <td><h2>{{ error }}</h2></td>
             
             <!-- BODY #2 -->
             <td></td>
@@ -55,6 +48,6 @@
         </tr>
         </tbody>
     </table>
-    
+
 </body>
 </html>

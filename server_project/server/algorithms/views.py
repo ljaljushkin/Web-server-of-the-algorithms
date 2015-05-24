@@ -52,7 +52,7 @@ def refill(request):
     try:
         user = User.objects.filter(login=login).get()
     except BoughtAlgorithm.DoesNotExist:
-        return HttpResponse("User does not exist!")
+        return render(request, "algorithms/error.html", dict(error="User does not exist!"))
         
     #WORKAROUND: should be done through not fake paycontroller#
     user.account_cash += int(request.POST["amount"])
@@ -119,7 +119,6 @@ def alg_details(request, alg_name, output=None):
         login = request.session["login"]
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
-    # TODO: tags
     is_bought = False
     is_mine = False
 
@@ -184,7 +183,7 @@ def buy_algorithm(request, alg_name):
     try:
         user = User.objects.filter(login=login).get()
         bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
-        return HttpResponse("Already bought!")
+        return render(request, "algorithms/error.html", dict(error="Algorithm was already bought!"))
     except BoughtAlgorithm.DoesNotExist:
         pay_controller = FakePayController()
         if pay_controller.send_money(algorithm.price, login, algorithm.user_id.login):
@@ -195,7 +194,7 @@ def buy_algorithm(request, alg_name):
 
             return HttpResponseRedirect("/algorithms/" + alg_name)
         else:
-            return HttpResponse("Not enough money!")
+            return render(request, "algorithms/error.html", dict(error="Not enough money!"))
 
 
 def update_algorithm_page(request, alg_name):
@@ -209,7 +208,7 @@ def update_algorithm_page(request, alg_name):
     algorithm = algorithm_controller.get_algorithm(alg_name)
     
     if algorithm.user_id != User.objects.filter(login=login).get():
-        return HttpResponse("You are not the owner!")
+        return render(request, "algorithms/error.html", dict(error="Access denied!"))
 
     tags_list = get_tags_for_algorithm(algorithm)
     tags_string = ",".join(tags_list)
@@ -240,7 +239,7 @@ def update_algorithm(request):
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
     if algorithm.user_id != User.objects.filter(login=login).get():
-        return HttpResponse("You are not the owner!")
+        return render(request, "algorithms/error.html", dict(error="Access denied!"))
         
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
@@ -337,10 +336,10 @@ def register(request):
         if request.POST["login"] == "" \
             or request.POST["email"] == "" \
             or request.POST["password"] == "":
-            return HttpResponse("Please enter values!")
+            return render(request, "algorithms/error.html", dict(error="Please fill in the fields!"))
         
         if request.POST["password"] != request.POST["confirm_password"]:
-            return HttpResponse("Passwords did not match!")
+            return render(request, "algorithms/error.html", dict(error="Passwords did not match!"))
         
         user = User.objects.create(login=request.POST["login"],
                                    email=request.POST["email"],
