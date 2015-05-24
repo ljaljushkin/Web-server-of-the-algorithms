@@ -331,8 +331,17 @@ def register(request):
 
     if "login" in request.POST.keys() \
             and "email" in request.POST.keys() \
-            and "password" in request.POST.keys():
-        print (request.POST["login"])
+            and "password" in request.POST.keys() \
+            and "confirm_password" in request.POST.keys():
+        
+        if request.POST["login"] == "" \
+            or request.POST["email"] == "" \
+            or request.POST["password"] == "":
+            return HttpResponse("Please enter values!")
+        
+        if request.POST["password"] != request.POST["confirm_password"]:
+            return HttpResponse("Passwords did not match!")
+        
         user = User.objects.create(login=request.POST["login"],
                                    email=request.POST["email"],
                                    password=request.POST["password"],
