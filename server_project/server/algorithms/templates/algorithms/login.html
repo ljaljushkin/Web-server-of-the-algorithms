@@ -51,8 +51,8 @@
                 {% else %}
                     <p> Signed in as: {{ login }} </p>
                     <form name="form" id="form" action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <p>Sign Out</p><input type="submit">
+                        {% csrf_token %}
+                        <input type="submit" value="Sign Out">
                     </form>
                 {% endif %}   
             </td>

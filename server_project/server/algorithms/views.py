@@ -16,10 +16,10 @@ pay_controller = IPayController
 
 
 def validate_config_parser(config_parser):
-    config_parser.get("general", "work_dir")
-    config_parser.get("compiler_paths", "cpp_path")
-    config_parser.get("compiler_paths", "cs_path")
-    config_parser.get("compiler_paths", "fp_path")
+    config_parser.get("general", "work_dir_Fedya1")
+    config_parser.get("compiler_paths", "cpp_path_Fedya1")
+    #config_parser.get("compiler_paths", "cs_path")
+    #config_parser.get("compiler_paths", "fp_path")
     return True
 
 
@@ -41,8 +41,26 @@ def alg_description(request, alg_name):
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
     return HttpResponse(algorithm.description)
-
-
+    
+def refill(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+    else:
+        return HttpResponseRedirect('/algorithms/login/')
+        
+    try:
+        user = User.objects.filter(login=login).get()
+    except BoughtAlgorithm.DoesNotExist:
+        return HttpResponse("User does not exist!")
+        
+    #WORKAROUND: should be done through not fake paycontroller#
+    user.account_cash += int(request.POST["amount"])
+    user.save()
+    
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
+    
+    
 def index(request):
     login = []
     if "login" in request.session.keys():
@@ -95,7 +113,7 @@ def get_tags_for_algorithm(algorithm):
     return tags_list
 
 
-def alg_details(request, alg_name):
+def alg_details(request, alg_name, output=None):
     login = []
     if "login" in request.session.keys():
         login = request.session["login"]
@@ -127,7 +145,8 @@ def alg_details(request, alg_name):
                        price=algorithm.price,
                        tags=tags_string,
                        login=login,
-                       is_bought=is_bought))
+                       is_bought=is_bought,
+                       output=output))
 
 
 def add_algorithm(request):
@@ -247,10 +266,15 @@ def run_existing_algo(request, alg_name):
     out_all += "<br>"
     for line in err.splitlines():
         out_all += line.strip().decode('utf-8')
-    return HttpResponse(out_all)
+    return alg_details(request, alg_name, out_all)
 
 
 def login(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+        return render(request, "algorithms/login.html", dict(login=login))
+
     if "login" in request.POST.keys() \
             and "password" in request.POST.keys():
 
@@ -263,8 +287,7 @@ def login(request):
 
         if user is not None:
             request.session["login"] = user.login
-            if request.META.get('HTTP_REFERER').endswith('/algorithms/login/'):
-                return HttpResponseRedirect('/algorithms/')
+            request.session["account_cash"] = user.account_cash
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
         else:
             return HttpResponseRedirect('/algorithms/register/')
@@ -276,12 +299,18 @@ def login(request):
 def logout(request):
     try:
         del request.session['login']
+        del request.session['account_cash']
     except KeyError:
         pass
     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
 
 
 def register(request):
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+        return render(request, "algorithms/login.html", dict(login=login))
+
     if "login" in request.POST.keys() \
             and "email" in request.POST.keys() \
             and "password" in request.POST.keys():
@@ -331,25 +360,12 @@ def submit_algorithm(request):
 
     out_all += "<br><br> OUTPUT STREAM FROM BUILD---> "
     for line in out.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
     out_all += "<br><br> ERROR STREAM FROM BUILD---> "
     for line in err.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
-    if ret_code == STATUS_SUCCESS:
-        (ret_code, out, err) = algorithm_controller.run_algorithm(new_algo.name)
-        if ret_code == STATUS_SUCCESS:
-            out_all += "<br><br>Algorithm was successfully run!"
-        else:
-            out_all += "<br><br> Failed to run algorithm! <br> ret_code = " + str(ret_code)
-
-        out_all += "<br><br> OUTPUT STREAM FROM EXE---> "
-        for line in out.splitlines():
-            out_all += line.strip().decode('utf-8') + "<br>"
-
-        out_all += "<br><br> ERROR STREAM FROM BUILD---> "
-        for line in err.splitlines():
-            out_all += line.strip().decode('utf-8') + "<br>"
-
-    return HttpResponse(out_all)
+    print out_all
+        
+    return run_existing_algo(request, new_algo.name)

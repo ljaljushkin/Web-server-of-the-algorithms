@@ -36,7 +36,7 @@
         
             <!-- USER TAB + TAGS-->
             <td>
-                {% include "algorithms/user_tab.html" %}  
+                {% include "algorithms/user_tab.html" with account_cash="TBD" %}  
                 {% for tag in tags_list %}
                     <a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}">{{ tag }}</a>
                 {% endfor %}
