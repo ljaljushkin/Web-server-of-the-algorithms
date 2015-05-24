@@ -63,6 +63,12 @@
                         {% endif %}
                     </form>
                 {% endif %}
+                {% if is_mine %}
+                    <form name="update_algorithm" id="update_algorithm" action="{% url 'update_algorithm' name %}" method="post" >
+                        {% csrf_token %}
+                            <input type="submit" name="update_algorithm" value="Update">
+                    </form>
+                {% endif %}
             </td>
             
             <!-- BODY #2 -->

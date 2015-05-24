@@ -121,12 +121,18 @@ def alg_details(request, alg_name, output=None):
     algorithm = algorithm_controller.get_algorithm(alg_name)
     # TODO: tags
     is_bought = False
+    is_mine = False
 
     if login:
         try:
             user = User.objects.filter(login=login).get()
-            bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
-            is_bought = True
+            if algorithm.user_id == user:
+                is_mine = True
+                is_bought=True
+            else:
+                bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
+                is_bought = True
+            
         except BoughtAlgorithm.DoesNotExist:
             is_bought = False
 
@@ -146,7 +152,8 @@ def alg_details(request, alg_name, output=None):
                        tags=tags_string,
                        login=login,
                        is_bought=is_bought,
-                       output=output))
+                       output=output,
+                       is_mine=is_mine))
 
 
 def add_algorithm(request):
@@ -228,13 +235,19 @@ def update_algorithm(request):
     else:
         return HttpResponseRedirect('/algorithms/login/')
 
+    alg_name = request.POST["name"]
+        
     algorithm_controller = create_algorithm_controller()
+    algorithm = algorithm_controller.get_algorithm(alg_name)
+    if algorithm.user_id != User.objects.filter(login=login).get():
+        return HttpResponse("You are not the owner!")
+        
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
                                         run_options=request.POST["run_string"])
     test_data.save()
 
-    (ret_code, out, err) = algorithm_controller.update_algorithm(name=request.POST["name"],
+    (ret_code, out, err) = algorithm_controller.update_algorithm(name=alg_name,
                                                                  description=request.POST["description"],
                                                                  source_code=request.POST["code"],
                                                                  build_options=request.POST["build_string"],
@@ -250,13 +263,15 @@ def update_algorithm(request):
 
     out_all += "<br><br> OUTPUT STREAM FROM BUILD---> "
     for line in out.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
     out_all += "<br><br> ERROR STREAM FROM BUILD---> "
     for line in err.splitlines():
-        out_all += line.strip().decode('utf-8') + "<br>"
+        out_all += line.strip() + "<br>"
 
-    return HttpResponse(out_all)
+    print out_all
+        
+    return HttpResponseRedirect("/algorithms/run/" + alg_name)
 
 
 def run_existing_algo(request, alg_name):
