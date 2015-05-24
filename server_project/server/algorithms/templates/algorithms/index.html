@@ -55,11 +55,7 @@
                         <option id="{{ item }}" name="{{ item }}" value="{{ item }}" onclick="getDescription()"> {{ item }} </option>
                     {% endfor %}
                 </select><br>
-                <input type="button" value="GO!!!111111" onclick="redirect()"/>
-                <form name="add_algorithm" id="add_algorithm" action="{% url 'add_algorithm' %}" method="post" >
-                    {% csrf_token %}
-                    <input type="submit" name="add_algorithm" value="add_algorithm">
-                </form>
+                <input type="button" value="View detailed info" onclick="redirect()"/>
                 <input type="button" value="update" onclick="updateAlgorithm()"/><br>
             </td>
             

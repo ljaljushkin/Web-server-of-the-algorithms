@@ -8,29 +8,60 @@
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    {% include "algorithms/home.html" %}
+
+    <!-- HEAD -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+            <!-- HOME -->
+            <!-- HEADER -->
+            <td>{% include "algorithms/home.html" %}</td>
+            <td><h1>Sign In</h1></td>
+        </tr>
+        </tbody>
+    </table>
+    
 </head>
+<hr>
 <body>
-	<center>
-    {% if not login %}
-        <h1>LOGIN </h1>
-        <form name="form" id="form" action="{% url 'login' %}" method="post">
-            {% csrf_token %}
-            <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
-            <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
-            <p><a href="{% url 'index' %}">ZABYL</a></p>
-            <input type="submit" value="LOGIN!!!">
-        </form>
-        <form name="register_form" id="register_form" action="{% url 'register' %}" method="post" >
-            {% csrf_token %}
-            <input type="submit" name="register" value="REGISTER!!!!">
-        </form>
-    {% else %}
-        <p> You were logged in as {{ login }} </p>
-        <form name="form" id="form" action="{% url 'logout' %}" method="post">
-        {% csrf_token %}
-        <p>LOGOUT</p><input type="submit">
-        </form>
-    {% endif %}   
-	</center>
+    <!-- BODY -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+        
+            <!-- USER TAB -->
+            <td></td>
+            
+            <!-- BODY #1 -->
+            <td>
+                {% if not login %}
+                    <form name="form" id="form" action="{% url 'login' %}" method="post">
+                        {% csrf_token %}
+                        <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
+                        <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
+                        <p><a href="{% url 'index' %}">Forgot password</a></p>
+                        <input type="submit" value="Sign In">
+                    </form>
+                    <form name="register_form" id="register_form" action="{% url 'register' %}" method="post" >
+                        {% csrf_token %}
+                        <input type="submit" name="register" value="Register">
+                    </form>
+                {% else %}
+                    <p> Signed in as: {{ login }} </p>
+                    <form name="form" id="form" action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <p>Sign Out</p><input type="submit">
+                    </form>
+                {% endif %}   
+            </td>
+            
+            <!-- BODY #2 -->
+            <td></td>
+            
+        </tr>
+        </tbody>
+    </table>
+    
 </body>

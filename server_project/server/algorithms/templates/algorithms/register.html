@@ -8,18 +8,50 @@
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    {% include "algorithms/home.html" %}
+    
+    <!-- HEAD -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+            <!-- HOME -->
+            <!-- HEADER -->
+            <td>{% include "algorithms/home.html" %}</td>
+            <td><h1>REGISTRATION</h1></td>
+        </tr>
+        </tbody>
+    </table>
+    
 </head>
+<hr>
 <body>
-	<center>
-		<h1>REGISTER </h1>
-		<form name="form" id="form" action="{% url 'register' %}" method="post">
-		{% csrf_token %}
-		<p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
-		<p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
-		<p>PASSWORD ECHO RAZ </p><input name="confirm_password" id="confirm_password" type="password" width="400px"><br>
-		<p>EMAIL </p><input name="email" id="email" type="text" width="400px"><br>
-		<input type="submit">
-		</form>
-	</center>
+    
+    <!-- BODY -->
+    <table style="width:100%">
+        <tbody>
+        <!-- THREE COLUMNS -->
+        <tr>
+        
+            <!-- USER TAB -->
+            <td></td>
+            
+            <!-- BODY #1 -->
+            <td>
+                <form name="form" id="form" action="{% url 'register' %}" method="post">
+                    {% csrf_token %}
+                    <p>LOGIN </p><input name="login" id="login" type="text" width="400px"><br>
+                    <p>PASSWORD </p><input name="password" id="password" type="password" width="400px"><br>
+                    <p>PASSWORD ECHO RAZ </p><input name="confirm_password" id="confirm_password" type="password" width="400px"><br>
+                    <p>EMAIL </p><input name="email" id="email" type="text" width="400px"><br>
+                    <input type="submit" value="REGISTER">
+                </form>
+            </td>
+            
+            <!-- BODY #2 -->
+            <td></td>
+            
+        </tr>
+        </tbody>
+    </table>
+    
 </body>
