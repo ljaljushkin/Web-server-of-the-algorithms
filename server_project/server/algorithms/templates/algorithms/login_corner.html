@@ -4,7 +4,7 @@
             {% csrf_token %}
             <p>Login <input name="login" id="login" type="text" width="200px"></p>
             <p>Password <input name="password" id="password" type="password" width="200px"></p>
-            <p><a href="{% url 'index' %}">Forgot password</a></p>
+            <p><a href="{% url 'password_reset_page' %}">Forgot password</a></p>
             <input type="submit" value="Sign In">
         </form>
         <form name="register_form" id="register_form" action="{% url 'register' %}" method="post" >

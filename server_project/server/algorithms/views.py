@@ -7,6 +7,13 @@ from algorithms import IPayController
 from algorithms.AlgorithmController import AlgorithmController
 from algorithms.FakePayController import FakePayController
 
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEBase import MIMEBase
+from email.MIMEText import MIMEText
+from email.Utils import COMMASPACE, formatdate
+from email import Encoders
+
 from algorithms.models import User, TestData, Status, BoughtAlgorithm, Tag, TagList, Algorithm
 from common.cmd_utils import STATUS_SUCCESS
 import operator
@@ -17,8 +24,8 @@ pay_controller = IPayController
 
 
 def validate_config_parser(config_parser):
-    config_parser.get("general", "work_dir_Tanya")
-    config_parser.get("compiler_paths", "cpp_path_Tanya")
+    config_parser.get("general", "work_dir_Fedya1")
+    config_parser.get("compiler_paths", "cpp_path_Fedya1")
     #config_parser.get("compiler_paths", "cs_path")
     #config_parser.get("compiler_paths", "fp_path")
     return True
@@ -88,6 +95,37 @@ def statistics(request) :
                    "rating":rating,
                    "login": login})
 
+def password_reset_page(request):
+    return render(request, "algorithms/password_reset.html", {})
+                 
+def password_reset(request):
+    if "login" in request.POST.keys() \
+        and "email" in request.POST.keys():
+    
+        try:
+            user = User.objects.filter(login=request.POST["login"], email=request.POST["email"]).get()
+            text = "Hello, %s!<br>Your password is: <b>%s</b>" %(user.login, user.password)
+            send_mail(user.email, "WSA Password reset", text)
+            return render(request, "algorithms/message.html", dict(login=login, header="Password Reset", message="Password was successfully sent to your email."))
+        except User.DoesNotExist:
+            return render(request, "algorithms/message.html", dict(login=login, header="Error", message="User or email does not exist!"))
+        
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/login/'))
+
+    
+def send_mail(send_to, subject, text, server="localhost"):
+    msg = MIMEMultipart()
+    msg['From'] = "noreply@algorithms.com"
+    msg['To'] = send_to
+    msg['Date'] = formatdate(localtime = True)
+    msg['Subject'] = subject
+
+    msg.attach(MIMEText(text, 'html'))
+
+    smtp = smtplib.SMTP(server)
+    smtp.sendmail(msg['From'], send_to, msg.as_string())
+    smtp.close()
+                   
 def refill(request):
     login = []
     if "login" in request.session.keys():
@@ -98,7 +136,7 @@ def refill(request):
     try:
         user = User.objects.filter(login=login).get()
     except BoughtAlgorithm.DoesNotExist:
-        return render(request, "algorithms/error.html", dict(login=login, error="User does not exist!"))
+        return render(request, "algorithms/message.html", dict(login=login, header="Error", message="User does not exist!"))
         
     #WORKAROUND: should be done through not fake paycontroller#
     user.account_cash += int(request.POST["amount"])
@@ -231,7 +269,7 @@ def buy_algorithm(request, alg_name):
     try:
         user = User.objects.filter(login=login).get()
         bought_alg = BoughtAlgorithm.objects.filter(user_id=user, algorithm_id=algorithm).get()
-        return render(request, "algorithms/error.html", dict(login=login, error="Algorithm was already bought!"))
+        return render(request, "algorithms/message.html", dict(login=login, header="Error", message="Algorithm was already bought!"))
     except BoughtAlgorithm.DoesNotExist:
         pay_controller = FakePayController()
         if pay_controller.send_money(algorithm.price, login, algorithm.user_id.login):
@@ -242,7 +280,7 @@ def buy_algorithm(request, alg_name):
 
             return HttpResponseRedirect("/algorithms/" + alg_name)
         else:
-            return render(request, "algorithms/error.html", dict(login=login, error="Not enough money!"))
+            return render(request, "algorithms/message.html", dict(login=login, header="Error", message="Not enough money!"))
 
 
 def update_algorithm_page(request, alg_name):
@@ -256,7 +294,7 @@ def update_algorithm_page(request, alg_name):
     algorithm = algorithm_controller.get_algorithm(alg_name)
     
     if algorithm.user_id != User.objects.filter(login=login).get():
-        return render(request, "algorithms/error.html", dict(login=login, error="Access denied!"))
+        return render(request, "algorithms/message.html", dict(login=login, header="Error", message="Access denied!"))
 
     tags_list = get_tags_for_algorithm(algorithm)
     tags_string = ",".join(tags_list)
@@ -287,7 +325,7 @@ def update_algorithm(request):
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
     if algorithm.user_id != User.objects.filter(login=login).get():
-        return render(request, "algorithms/error.html", dict(login=login, error="Access denied!"))
+        return render(request, "algorithms/message.html", dict(login=login, header="Error", message="Access denied!"))
         
     test_data = TestData.objects.create(input_data=request.POST["test_data"],
                                         output_data=request.POST["test_data"],
@@ -392,20 +430,20 @@ def register(request):
         if request.POST["login"] == "" \
             or request.POST["email"] == "" \
             or request.POST["password"] == "":
-            return render(request, "algorithms/error.html", dict(login=login, error="Please fill in the fields!"))
+            return render(request, "algorithms/message.html", dict(login=_login, header="Error", message="Please fill in the fields!"))
         
         if request.POST["password"] != request.POST["confirm_password"]:
-            return render(request, "algorithms/error.html", dict(login=login, error="Passwords did not match!"))
+            return render(request, "algorithms/message.html", dict(login=_login, header="Error", message="Passwords did not match!"))
         
         try:
             User.objects.filter(login=request.POST["login"]).get()
-            return render(request, "algorithms/error.html", dict(login=login, error="Such user is already registered!"))
+            return render(request, "algorithms/message.html", dict(login=_login, header="Error", message="Such user is already registered!"))
         except User.DoesNotExist:
             pass
         
         try:
             User.objects.filter(email=request.POST["email"]).get()
-            return render(request, "algorithms/error.html", dict(login=login, error="Such email is already registered!"))
+            return render(request, "algorithms/message.html", dict(login=_login, header="Error", message="Such email is already registered!"))
         except User.DoesNotExist:
             pass
         
