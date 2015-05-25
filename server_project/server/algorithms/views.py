@@ -414,7 +414,15 @@ def my_algorithms(request):
     else:
         return HttpResponseRedirect('/algorithms/login/')
         
-    return index(request, create_algorithm_controller().get_user_algorithm_names_list(User.objects.filter(login=login).get()))
+    user = User.objects.filter(login=login).get()
+    algorithm_controller = create_algorithm_controller()
+    algs_list = algorithm_controller.get_algorithms_list().filter(user_id=user).all()
+        
+    result = []
+    for item in algs_list:
+        result.append(item.name)
+        
+    return index(request, result)
 
 def register(request):
     _login = []

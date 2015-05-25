@@ -15,7 +15,7 @@ class AlgorithmController(IAlgorithmController):
         self.build_bot = BuildBot()
         self.test_bot = TestBot()
         self.config_parser = config_parser
-        self.work_dir = self.config_parser.get("general", "work_dir")
+        self.work_dir = self.config_parser.get("general", "work_dir_Fedya1")
 
     def remove_algorithm(self, name):
         current_algorithm = Algorithm.objects.filter(name=name).get()
@@ -62,16 +62,6 @@ class AlgorithmController(IAlgorithmController):
 
     def get_algorithm_names_list(self):
         alg_obj_list = self.get_algorithms_list()
-        result = []
-        for item in alg_obj_list:
-            result.append(item.name)
-        return result
-
-    def get_user_algorithms_list(self, user):
-        return Algorithm.objects.filter(user_id=user).all()
-        
-    def get_user_algorithm_names_list(self, user):
-        alg_obj_list = self.get_user_algorithms_list(user)
         result = []
         for item in alg_obj_list:
             result.append(item.name)
