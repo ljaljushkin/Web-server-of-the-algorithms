@@ -15,7 +15,7 @@ class AlgorithmController(IAlgorithmController):
         self.build_bot = BuildBot()
         self.test_bot = TestBot()
         self.config_parser = config_parser
-        self.work_dir = self.config_parser.get("general", "work_dir_Fedya1")
+        self.work_dir = self.config_parser.get("general", "work_dir")
 
     def remove_algorithm(self, name):
         current_algorithm = Algorithm.objects.filter(name=name).get()

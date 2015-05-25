@@ -24,10 +24,10 @@ pay_controller = IPayController
 
 
 def validate_config_parser(config_parser):
-    config_parser.get("general", "work_dir_Fedya1")
-    config_parser.get("compiler_paths", "cpp_path_Fedya1")
-    #config_parser.get("compiler_paths", "cs_path")
-    #config_parser.get("compiler_paths", "fp_path")
+    config_parser.get("general", "work_dir")
+    config_parser.get("compiler_paths", "cpp_path")
+    config_parser.get("compiler_paths", "cs_path")
+    config_parser.get("compiler_paths", "fp_path")
     return True
 
 
