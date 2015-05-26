@@ -8,53 +8,58 @@
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    
-    <!-- HEAD -->
-    <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
-            <!-- HOME -->
-            <!-- HEADER -->
-            <!-- LOGIN CORNER -->
-            <td>{% include "algorithms/home.html" %}</td>
-            <td><h1>Registration</h1></td>
-            <td>{% include "algorithms/login_corner.html" %}</td>
-        </tr>
-        </tbody>
-    </table>
+    <link href="{% static 'algorithms/css/main_style.css' %}" rel="stylesheet" />
     
 </head>
-<hr>
 <body>
-    
+    <div id="container">
+        <div class="header">
+            <!-- HOME -->
+            <div class="left-header">
+              {% include "algorithms/home.html" %}
+            </div>
+            <!-- HEADER -->
+            <div class="middle-header">
+              <h1 style="color: white;">Registration</h1>
+            </div>
+            <!-- LOGIN CORNER -->
+            <div class="right-header">
+            </div>
+        </div>
     <!-- BODY -->
     <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
-        
+      <div class="content">
+      <!-- THREE COLUMNS -->
+         <div class="col left">
+         </div>
             <!-- USER TAB -->
-            <td></td>
+         <div class="col middle">
+            <form name="form" id="form" action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <p>Login </p><input name="login" id="login" type="text" width="400px"><br>
+                <p>Password </p><input name="password" id="password" type="password" width="400px"><br>
+                <p>Confirm Password </p><input name="confirm_password" id="confirm_password" type="password" width="400px"><br>
+                <p>Email </p><input name="email" id="email" type="text" width="400px"><br>
+                <input type="submit" value="Register">
+            </form>
+         </div>
             
             <!-- BODY #1 -->
-            <td>
-                <form name="form" id="form" action="{% url 'register' %}" method="post">
-                    {% csrf_token %}
-                    <p>Login </p><input name="login" id="login" type="text" width="400px"><br>
-                    <p>Password </p><input name="password" id="password" type="password" width="400px"><br>
-                    <p>Confirm Password </p><input name="confirm_password" id="confirm_password" type="password" width="400px"><br>
-                    <p>Email </p><input name="email" id="email" type="text" width="400px"><br>
-                    <input type="submit" value="Register">
-                </form>
-            </td>
-            
-            <!-- BODY #2 -->
-            <td></td>
-            
-        </tr>
-        </tbody>
-    </table>
+         <div class="col right">  
+         </div>
+     </div>
+    <div class="footer">
+        <div class="left-header">
+        </div>
+        <!-- HEADER -->
+        <div class="middle-header">
+        </div>
+        <!-- LOGIN CORNER -->
+        <div class="right-header">
+          <p style="color: white;">Designed by Kolya, Fedya, Nikita and Tanya. All rights reserved :)</p>
+        </div>
+      </div>   
+   </div>
     
 </body>
 </html>

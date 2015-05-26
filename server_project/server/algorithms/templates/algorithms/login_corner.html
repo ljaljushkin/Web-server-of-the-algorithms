@@ -2,8 +2,8 @@
     {% if not login %}
         <form name="login_form" id="login_form" action="{% url 'login' %}" method="post">
             {% csrf_token %}
-            <p>Login <input name="login" id="login" type="text" width="200px"></p>
-            <p>Password <input name="password" id="password" type="password" width="200px"></p>
+            <p style="color: white;">Login <input name="login" id="login" type="text" width="200px"></p>
+            <p style="color: white;">Password <input name="password" id="password" type="password" width="200px"></p>
             <p><a href="{% url 'password_reset_page' %}">Forgot password</a></p>
             <input type="submit" value="Sign In">
         </form>
@@ -12,7 +12,7 @@
             <input type="submit" name="register" value="Register">
         </form>
     {% else %}
-        <p> Signed in as: <b>{{ login }}</b> </p>
+        <p style="color: white;"> Signed in as: <b>{{ login }}</b> </p>
         <form name="logout_form" id="logout_form" action="{% url 'logout' %}" method="post">
             {% csrf_token %}
             <input type="submit" value="Sign out">

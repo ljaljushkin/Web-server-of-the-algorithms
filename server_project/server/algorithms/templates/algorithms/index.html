@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-    <style> ul { padding: 0; margin-left: 20px; margin-right: 20px; } </style>
     <meta charset="UTF-8">
     {% load staticfiles %}
 
@@ -10,71 +9,78 @@
     <script src="{% static 'algorithms/js/tagcloud.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    
-    <!-- HEAD -->
-    <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
-            <!-- HOME -->
-            <!-- HEADER -->
-            <!-- LOGIN CORNER -->
-            <td>{% include "algorithms/home.html" %}</td>
-            <td><h1>Main Page</h1></td>
-            <td>{% include "algorithms/login_corner.html" %}</td>
-        </tr>
-        </tbody>
-    </table>
-    
+    <link href="{% static 'algorithms/css/main_style.css' %}" rel="stylesheet" />
+
 </head>
-<hr>
-<body>
+
+  <div id="container">
+    <div class="header">
+        <!-- HOME -->
+        <div class="left-header">
+          {% include "algorithms/home.html" %}
+        </div>
+        <!-- HEADER -->
+        <div class="middle-header">
+          <h1 style="color: white;">Main Page</h1>
+        </div>
+        <!-- LOGIN CORNER -->
+        <div class="right-header">
+          {% include "algorithms/login_corner.html" %}
+        </div>
+    </div>
+
     <!-- BODY -->
-    <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
-        
-            <!-- USER TAB + TAGS-->
-            <td>
-                {% include "algorithms/user_tab.html" %}  
-                <canvas width="300" height="450" id="myCanvas">
-                    <ul class="weighted" style="font-size: 50%" id="weightTags">
-                        {% for tag in tags_list %}
-                            <li><a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}" data-weight="{{tag}}">{{ tag }}</a></li>
-                        {% endfor %}
-                    </ul>
-                </canvas>
-            </td>
-            
-            <!-- BODY #1 -->
-            <td>
-                {% csrf_token %}
-                <p>Search: <input type="text" id="searchText" value=""></p>
-                <select name="selected_alg" multiple="False" id='lstBox1' style="font-family:verdana;
-                                                    font-size:10pt;
-                                                    width : 400px;
-                                                    height:200px;">
-                    {% for item in algs_list %}
-                        <option id="{{ item }}" name="{{ item }}" value="{{ item }}" onclick="getDescription()"> {{ item }} </option>
-                    {% endfor %}
-                </select><br>
-                <input type="button" value="View detailed info" onclick="redirect()"/>
-            </td>
-            
-            <!-- BODY #2 -->
-            <td>
-                {% csrf_token %}
-                <p>Algorithm Description:</p>
-                <textarea readonly id="description" name="description" 
-                        style="width:300px; height:200px;resize:none;font-family: monaco, Consolas, 'Lucida Console', monospace; font-size: 11px; font-style: normal; background: white;"> 
-                </textarea>
-            </td>
-            
-        </tr>
-        </tbody>
-    </table>
-    
+    <body>
+      <div class="content">
+              <!-- THREE COLUMNS -->
+                 <div class="col left">
+                  <!-- USER TAB + TAGS-->
+                      {% include "algorithms/user_tab.html" %}  
+                      <canvas width="300" height="450" id="myCanvas">
+                          <ul class="weighted" style="font-size: 50%" id="weightTags">
+                              {% for tag in tags_list %}
+                                  <li><a href="{{ object.get_absolute_url }}/algorithms/tag/{{ tag }}" data-weight="{{tag}}">{{ tag }}</a></li>
+                              {% endfor %}
+                          </ul>
+                      </canvas>
+                </div>
+                
+                <div class="col middle">  
+                  <!-- BODY #1 -->
+                      {% csrf_token %}
+                      <p>Search: <input type="text" id="searchText" value=""></p>
+                      <select name="selected_alg" multiple="False" id='lstBox1' style="font-family:verdana;
+                                                          font-size:10pt;
+                                                          width : 95%;
+                                                          height: 500px;">
+                          {% for item in algs_list %}
+                              <option id="{{ item }}" name="{{ item }}" value="{{ item }}" onclick="getDescription()"> {{ item }} </option>
+                          {% endfor %}
+                      </select><br>
+                      <input type="button" value="View detailed info" onclick="redirect()"/>
+                 
+                </div>
+
+                <div class="col right">
+                  <!-- BODY #2 -->
+                      {% csrf_token %}
+                      <p>Algorithm Description:</p>
+                      <textarea readonly id="description" name="description"> 
+                      </textarea>
+                </div>
+        </div>
+      <div class="footer">
+        <div class="left-header">
+        </div>
+        <!-- HEADER -->
+        <div class="middle-header">
+        </div>
+        <!-- LOGIN CORNER -->
+        <div class="right-header">
+          <p style="color: white;">Designed by Kolya, Fedya, Nikita and Tanya. All rights reserved :)</p>
+        </div>
+      </div>
+  </div>
 </body>
 
 <script>

@@ -1,0 +1,100 @@
+* {
+          -webkit-box-sizing: border-box;
+          -moz-box-sizing: border-box;
+          box-sizing: border-box;
+      }
+
+      body {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+      }
+
+      #container {
+          display: table;
+          height: 100%;
+          width: 100%;
+          text-align: center;
+      }
+      .row  {
+            display: table-row;
+            width:100%;
+            height: 100%;
+      }
+      .header{
+          margin: 0;
+          padding: 0;
+          background-image: url(header.jpg);
+          background-size: contain;
+          display:table-row;
+          text-align: center;
+          vertical-align: middle;
+          height: 22%;
+      }
+
+      .footer{
+          background-image: url(header.jpg);
+          background-size: contain;
+          display:table-row;
+          text-align: center;
+          vertical-align: middle;
+          height: 2%;
+      }
+
+      .content {
+            display: table-row;
+            /*background: brown;*/
+            width:100%;
+            height: 100%;
+            overflow: auto;
+      }
+
+      .col {
+            display: table-cell;
+            padding: 5px;
+            vertical-align: top;
+            height: 100%;
+      }
+
+      .left {
+          background: #DAEFEF;
+          width:20%;
+      }
+
+      .right{
+          display: table-cell;
+          width:45%;
+          height: 100%;
+      }
+
+      .middle{
+          display: table-cell;
+      }
+
+      .left-header {
+          display: table-cell;
+          width:10%;
+          vertical-align: middle;
+      }
+      .right-header{
+          /*background: green;*/
+          display: table-cell;
+          width:45%;
+          vertical-align: middle;
+      }
+      .middle-header{
+          /*background: brown;*/
+          display: table-cell;
+          vertical-align: middle;
+      }
+      textarea {
+          height: 500px;
+          width: 95%;
+          resize: none;
+      }
+      select {
+          height: 500px;
+          width: 95%;
+      }

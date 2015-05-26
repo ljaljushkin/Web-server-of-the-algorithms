@@ -8,46 +8,53 @@
     <script src="{% static 'algorithms/js/jquery.form.js' %}"></script>
     <title></title>
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-
-    <!-- HEAD -->
-    <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
-            <!-- HOME -->
-            <!-- HEADER -->
-            <!-- LOGIN CORNER -->
-            <td>{% include "algorithms/home.html" %}</td>
-            <td><h1>{{ header }}</h1></td>
-            <td>{% include "algorithms/login_corner.html" %}</td>
-        </tr>
-        </tbody>
-    </table>
+    <link href="{% static 'algorithms/css/main_style.css' %}" rel="stylesheet" />
     
 </head>
-<hr>
 <body>
+    <div id="container">
+        <div class="header">
+            <!-- HOME -->
+            <div class="left-header">
+              {% include "algorithms/home.html" %}
+            </div>
+            <!-- HEADER -->
+            <div class="middle-header">
+              <h1 style="color: white;">{{ header }}</h1>
+            </div>
+            <!-- LOGIN CORNER -->
+            <div class="right-header">
+              {% include "algorithms/login_corner.html" %}
+            </div>
+        </div>
 
     <!-- BODY -->
-    <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
+    <div class="content">
+        <!-- USER TAB -->
+        <div class="col left">
+            {% include "algorithms/user_tab.html" %}  
+        </div>
         
-            <!-- USER TAB -->
-            <td>
-                {% include "algorithms/user_tab.html" %}  
-            </td>
-            
-            <!-- BODY #1 -->
-            <td><h2>{{ message }}</h2></td>
-            
-            <!-- BODY #2 -->
-            <td></td>
-            
-        </tr>
-        </tbody>
-    </table>
+        <!-- BODY #1 -->
+        <div class="col middle"><h2>{{ message }}</h2></div>
+        
+        <!-- BODY #2 -->
+        <div class="col right"></div>
+    </div>
+    
+        <div class="footer">
+            <div class="left-header">
+            </div>
+            <!-- HEADER -->
+            <div class="middle-header">
+            </div>
+            <!-- LOGIN CORNER -->
+            <div class="right-header">
+              <p style="color: white;">Designed by Kolya, Fedya, Nikita and Tanya. All rights reserved :)</p>
+            </div>
+        </div>
+    
+</div>
 
 </body>
 </html>
