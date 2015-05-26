@@ -37,7 +37,7 @@
         
             <!-- USER TAB + TAGS-->
             <td>
-                {% include "algorithms/user_tab.html" with account_cash="TBD" %}  
+                {% include "algorithms/user_tab.html" %}  
                 <canvas width="300" height="450" id="myCanvas">
                     <ul class="weighted" style="font-size: 50%" id="weightTags">
                         {% for tag in tags_list %}
