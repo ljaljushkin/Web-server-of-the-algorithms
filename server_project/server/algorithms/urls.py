@@ -19,5 +19,5 @@ urlpatterns = patterns("",
                        url(r'^([-\w]+)/description/$', views.alg_description, name="alg_details"),
                        url(r"refill/$", views.refill, name="refill"),
                        url(r"my/$", views.my_algorithms, name="my_algorithms"),
-                       url(r"password_reset/$", views.password_reset, name="password_reset"),
-                       url(r"password_reset_page/$", views.password_reset_page, name="password_reset_page"))
+                       url(r"password_reset_result/$", views.password_reset, name="password_reset"),
+                       url(r"password_reset/$", views.password_reset_page, name="password_reset_page"))

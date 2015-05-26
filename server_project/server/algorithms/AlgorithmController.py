@@ -43,6 +43,7 @@ class AlgorithmController(IAlgorithmController):
     def run_algorithm(self, name):
         algorithm = self.get_algorithm(name)
         exe_path = self._get_exe_path(algorithm)
+        self._create_test_data(algorithm)
         return self.test_bot.run(file=exe_path,
                                  run_string=algorithm.testdata_id.run_options)
 
@@ -75,6 +76,7 @@ class AlgorithmController(IAlgorithmController):
         return result
 
     def update_algorithm(self,
+                         original_name,
                          name,
                          description,
                          source_code,
@@ -83,8 +85,8 @@ class AlgorithmController(IAlgorithmController):
                          price,
                          language,
                          tags):
-        old_algorithm = self.get_algorithm(name)
-        algorithm = self.get_algorithm(name)
+        old_algorithm = self.get_algorithm(original_name)
+        algorithm = self.get_algorithm(original_name)
 
         algorithm.user_id = old_algorithm.user_id
         algorithm.status_id = old_algorithm.status_id
@@ -166,6 +168,12 @@ class AlgorithmController(IAlgorithmController):
             algorithm_tag.save()
 
         return algorithm
+
+    def _create_test_data(self, algorithm):
+        test_data = self._get_algorithm_dir(algorithm) + os.sep + "test_data.txt"
+        with open(test_data, "wb") as test_data_file:
+            test_data_file.write(algorithm.testdata_id.input_data)
+        return test_data
 
     def _get_algorithm_dir(self, algorithm):
         return self.work_dir + os.sep + str(algorithm.user_id.user_id) + os.sep + str(algorithm.algorithm_id)

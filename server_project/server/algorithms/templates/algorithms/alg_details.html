@@ -74,7 +74,7 @@
             <!-- BODY #2 -->
             <td>
             {% if output != None%}
-                {{output}}
+                {% autoescape off %}{{output}}{% endautoescape %}
             {% endif %}
             </td>
             
