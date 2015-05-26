@@ -2,40 +2,38 @@
 <head lang="en">
     <!-- HEAD -->
     <link href="{% static 'algorithms/css/bootstrap-combined.min.css' %}" rel="stylesheet" />
-    <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
-            <!-- HOME -->
-            <!-- HEADER -->
-            <!-- LOGIN CORNER -->
-            <td>{% include "algorithms/home.html" %}</td>
-            <td><h1>Statistics</h1></td>
-            <td>{% include "algorithms/login_corner.html" %}</td>
-        </tr>
-        </tbody>
-    </table>
+    <link href="{% static 'algorithms/css/main_style.css' %}" rel="stylesheet" />
     
 </head>
-<hr>
 <body>
-
+    <div id="container">
+        <div class="header">
+            <!-- HOME -->
+            <div class="left-header">
+              {% include "algorithms/home.html" %}
+            </div>
+            <!-- HEADER -->
+            <div class="middle-header">
+              <h1 style="color: white;">Statistics</h1>
+            </div>
+            <!-- LOGIN CORNER -->
+            <div class="right-header">
+              {% include "algorithms/login_corner.html" %}
+            </div>
+        </div>
     <!-- BODY -->
-    <table style="width:100%">
-        <tbody>
-        <!-- THREE COLUMNS -->
-        <tr>
+    <div class="content">
         
             <!-- USER TAB -->
-            <td>
+            <div class="col left">
                 {% include "algorithms/user_tab.html" %}  
-            </td>
+            </div>
             
             <!-- BODY #1 -->
-            <td>
+            <div class="col middle">
                 <h2>Submissions statistics</h2><br><br>
-                <b>Submitted algorithms: </b><br>
-                <table border="1">
+
+                <table border="1" align="center">
                     <tr><td>User</td><td>Algorithm</td></tr>
                     {% for item in submissions %}
                         <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td></tr>
@@ -43,19 +41,19 @@
                 </table>
 
                 <h2>Algorithms rating</h2><br><br>
-                <table border="1">
+                <table border="1" align="center">
                     <tr><td>Algorithm</td><td>Downloads</td></tr>
                     {% for item in rating %}
                         <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td></tr>
                     {% endfor %}
                 </table>
-            </td>
+            </div>
             
             <!-- BODY #2 -->
-            <td>
+            <div class="col right">
                 <h2>Downloads statistics</h2><br><br>
-                <b>Downloaded algorithms (free and paid): </b><br>
-                <table border="1">
+
+                <table border="1" align="center">
                     <tr><td>User</td><td>Algorithm</td></tr>
                     {% for item in downloads %}
                         <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td></tr>
@@ -63,17 +61,27 @@
                 </table>
                 <br> <br>
                 <h2>Purchase statistics</h2><br><br>
-                <b>Bought algorithms: </b><br>
-                <table border="1">
+
+                <table border="1" align="center">
                     <tr><td>User</td><td>Algorithm</td><td>Price</td></tr>
                     {% for item in purchases %}
                         <tr><td>{{ item.0 }}</td><td>{{ item.1 }}</td><td>{{ item.2 }}</td></tr>
                     {% endfor %}
                 </table>
-            </td>
+            </div>
             
-        </tr>
-        </tbody>
-    </table>
+        </div>
+        <div class="footer">
+        <div class="left-header">
+        </div>
+        <!-- HEADER -->
+        <div class="middle-header">
+        </div>
+        <!-- LOGIN CORNER -->
+        <div class="right-header">
+          <p style="color: white;">Designed by Kolya, Fedya, Nikita and Tanya. All rights reserved :)</p>
+        </div>
+      </div>
+    </div>
 
 </body>
