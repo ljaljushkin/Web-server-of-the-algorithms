@@ -350,7 +350,7 @@ def update_algorithm(request):
     else:
         return HttpResponseRedirect('/algorithms/login/')
 
-    alg_name = request.POST["name"]
+    alg_name = request.POST["original_name"]
         
     algorithm_controller = create_algorithm_controller()
     algorithm = algorithm_controller.get_algorithm(alg_name)
@@ -362,7 +362,8 @@ def update_algorithm(request):
                                         run_options=request.POST["run_string"])
     test_data.save()
 
-    (ret_code, out, err) = algorithm_controller.update_algorithm(name=alg_name,
+    (ret_code, out, err) = algorithm_controller.update_algorithm(original_name = alg_name,
+                                                                 name=request.POST["name"],
                                                                  description=request.POST["description"],
                                                                  source_code=request.POST["code"],
                                                                  build_options=request.POST["build_string"],
@@ -384,7 +385,7 @@ def update_algorithm(request):
     for line in err.splitlines():
         out_all += line.strip() + "<br>"
 
-    return run_existing_algo(request, alg_name, out_all)    
+    return run_existing_algo(request, request.POST["name"], out_all)    
 
 
 def run_existing_algo(request, alg_name, output=None):

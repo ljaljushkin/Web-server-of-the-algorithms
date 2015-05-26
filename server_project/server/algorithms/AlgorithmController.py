@@ -76,6 +76,7 @@ class AlgorithmController(IAlgorithmController):
         return result
 
     def update_algorithm(self,
+                         original_name,
                          name,
                          description,
                          source_code,
@@ -84,8 +85,8 @@ class AlgorithmController(IAlgorithmController):
                          price,
                          language,
                          tags):
-        old_algorithm = self.get_algorithm(name)
-        algorithm = self.get_algorithm(name)
+        old_algorithm = self.get_algorithm(original_name)
+        algorithm = self.get_algorithm(original_name)
 
         algorithm.user_id = old_algorithm.user_id
         algorithm.status_id = old_algorithm.status_id
