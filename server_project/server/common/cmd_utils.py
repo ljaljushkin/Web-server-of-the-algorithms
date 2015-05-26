@@ -8,9 +8,9 @@ STATUS_ERROR_PROC_NOT_FOUND = 127
 STATUS_ERROR_LANGUAGE_NOT_FOUND = 128
 
 
-def shell(cmd, env=None):
+def shell(cmd, env=None, work_dir=None):
     print("calling command: " + str(cmd))
-    process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    process = subprocess.Popen(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, cwd=work_dir)
     (std_out, std_err) = process.communicate()
     print_std_streams(std_out, std_err, "shell")
     return process.returncode, std_out, std_err

@@ -1,5 +1,6 @@
 from common.cmd_utils import shell, screen_str
 from test_bot_project.itest_bot import ITestBot
+import os
 
 
 class TestBot(ITestBot):
@@ -13,4 +14,4 @@ class TestBot(ITestBot):
 
     def run(self, file, run_string):
         run_cmd = self.get_run_command(file, run_string)
-        return shell(run_cmd)
+        return shell(run_cmd, work_dir=os.path.dirname(file))
