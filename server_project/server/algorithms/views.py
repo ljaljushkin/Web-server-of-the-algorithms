@@ -52,11 +52,11 @@ def alg_description(request, alg_name):
     
 
 def statistics(request) :
-    login = []
+    _login = []
     account_cash = []
     if "login" in request.session.keys():
-        login = request.session["login"]
-        account_cash = User.objects.filter(login=login).get().account_cash
+        _login = request.session["login"]
+        account_cash = User.objects.filter(login=_login).get().account_cash
 
     bought_algs_list = BoughtAlgorithm.objects.all()
     submitted_algorithms = Algorithm.objects.all()
@@ -95,7 +95,7 @@ def statistics(request) :
                    "downloads":downloads,
                    "purchases":purchases,
                    "rating":rating,
-                   "login": login,
+                   "login": _login,
                    "account_cash": account_cash})
 
 def password_reset_page(request):
