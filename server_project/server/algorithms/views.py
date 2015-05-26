@@ -96,7 +96,11 @@ def statistics(request) :
                    "login": login})
 
 def password_reset_page(request):
-    return render(request, "algorithms/password_reset.html", {})
+    login = []
+    if "login" in request.session.keys():
+        login = request.session["login"]
+
+    return render(request, "algorithms/password_reset.html", dict(login=login))
                  
 def password_reset(request):
     if "login" in request.POST.keys() \
@@ -354,12 +358,10 @@ def update_algorithm(request):
     for line in err.splitlines():
         out_all += line.strip() + "<br>"
 
-    print out_all
-        
-    return HttpResponseRedirect("/algorithms/run/" + alg_name)
+    return run_existing_algo(request, alg_name, out_all)    
 
 
-def run_existing_algo(request, alg_name):
+def run_existing_algo(request, alg_name, output=None):
     algorithm_controller = create_algorithm_controller()
     (ret_code, out, err) = algorithm_controller.run_algorithm(alg_name)
     out_all = "ret_code = " + str(ret_code) + "<br>"
@@ -369,14 +371,17 @@ def run_existing_algo(request, alg_name):
     out_all += "<br>"
     for line in err.splitlines():
         out_all += line.strip().decode('utf-8')
-    return alg_details(request, alg_name, out_all)
+    if output == None:
+        output = ""
+    output += out_all
+    return alg_details(request, alg_name, output)
 
 
 def login(request):
     login = []
     if "login" in request.session.keys():
         login = request.session["login"]
-        return render(request, "algorithms/login.html", dict(login=login))
+        return HttpResponseRedirect('/algorithms/')
 
     if "login" in request.POST.keys() \
             and "password" in request.POST.keys():
@@ -391,6 +396,8 @@ def login(request):
         if user is not None:
             request.session["login"] = user.login
             request.session["account_cash"] = user.account_cash
+            if request.META.get('HTTP_REFERER').endswith('/login/'):
+                return HttpResponseRedirect('/algorithms/')
             return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/algorithms/'))
         else:
             return HttpResponseRedirect('/algorithms/register/')
@@ -505,7 +512,5 @@ def submit_algorithm(request):
     out_all += "<br><br> ERROR STREAM FROM BUILD---> "
     for line in err.splitlines():
         out_all += line.strip() + "<br>"
-
-    print out_all
         
-    return run_existing_algo(request, new_algo.name)
+    return run_existing_algo(request, new_algo.name, out_all)
