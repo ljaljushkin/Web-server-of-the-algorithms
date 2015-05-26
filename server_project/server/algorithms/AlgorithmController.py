@@ -66,7 +66,7 @@ class AlgorithmController(IAlgorithmController):
         for item in alg_obj_list:
             result.append(item.name)
         return result
-
+        
     def get_tagged_algorithm_names_list(self, tag):
         alg_obj_list = self.get_tagged_algorithms_list(tag)
         result = []
