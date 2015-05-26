@@ -52,8 +52,13 @@
                     </select><br>
                     <p>Code</p><textarea name="code" id="code">{{code}}</textarea>
                     <p>Build string</p><input name="build_string" id="build_string" type="text" width="400px" value="{{build_string}}"><br>
-                    <p>Run string</p><input name="run_string" id="run_string" type="text" width="400px" value="{{run_string}}"><br>
-                    <p>Test data</p><textarea name="test_data" id="test_data">{{test_data}}</textarea>
+                    
+                    <p>Run string<br><small>(Pay attention to the Test Data file name)</small></p>
+                    <input name="run_string" id="run_string" type="text" width="400px" value="{{run_string}}"><br>
+
+                    <p>Test data<br><small>(Will be stored in "test_data.txt")</small></p>
+                    <textarea name="test_data" id="test_data">{{test_data}}</textarea>
+
                     <p>Price</p><input name="price" id="price" type="text" width="400px" value="{{price}}"><br>
                     <p>Tags</p><input name="tags" id="tags" type="text" width="400px" value="{{tags}}"><br>
                     <input type="submit" value="Update">
